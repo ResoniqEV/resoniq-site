@@ -237,13 +237,155 @@
   .prof {
     background:var(--bg2); border:1px solid var(--bd); border-radius:14px;
     padding:20px 14px; text-align:center; transition:all .2s; position:relative;
+    cursor:pointer; user-select:none;
   }
+  .prof:hover { transform:translateY(-3px); border-color:var(--bd2); }
   .prof.live-prof  { border-color:rgba(232,41,60,.4); background:var(--rd4); }
-  .prof.soon-prof  { opacity:.65; }
+  .prof.live-prof:hover { border-color:rgba(232,41,60,.7); }
+  .prof.soon-prof  { opacity:.72; }
+  .prof.soon-prof:hover { opacity:1; }
   .prof-icon { font-size:28px; margin-bottom:10px; }
   .prof-name { font-size:12px; font-weight:700; color:var(--tx2); }
   .prof-sub  { font-size:10px; color:var(--mu); margin-top:3px; }
   .prof-tag  { margin-top:8px; }
+  .prof-try  { margin-top:10px; font-size:9px; font-weight:700; letter-spacing:.08em;
+               color:var(--rd); opacity:0; transition:opacity .2s; }
+  .prof:hover .prof-try { opacity:1; }
+
+  /* ══ SIMULATOR OVERLAY ══ */
+  .sim-overlay {
+    position:fixed; inset:0; z-index:2000;
+    background:var(--bg);
+    transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .sim-overlay.open { transform:translateX(0); }
+
+  .sim-header {
+    display:flex; align-items:center; gap:12px;
+    padding:16px 20px; border-bottom:1px solid var(--bd);
+    background:rgba(9,9,11,0.95); backdrop-filter:blur(20px);
+    flex-shrink:0;
+  }
+  .sim-back {
+    background:var(--bg3); border:1px solid var(--bd2); color:var(--tx2);
+    font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px;
+    cursor:pointer; transition:all .15s; white-space:nowrap; flex-shrink:0;
+  }
+  .sim-back:hover { background:var(--bd); color:#fff; }
+  .sim-profile-id {
+    display:flex; align-items:center; gap:10px; flex:1; min-width:0;
+  }
+  .sim-profile-icon { font-size:24px; flex-shrink:0; }
+  .sim-profile-name { font-size:16px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sim-vol-wrap { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .sim-vol-icon { font-size:16px; }
+  .sim-vol-slider {
+    -webkit-appearance:none; width:80px; height:4px;
+    background:var(--bd2); border-radius:4px; outline:none; cursor:pointer;
+  }
+  .sim-vol-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; width:14px; height:14px;
+    background:var(--rd); border-radius:50%; cursor:pointer;
+  }
+  @media(max-width:480px){ .sim-vol-slider { width:56px; } }
+
+  .sim-preview-banner {
+    background:rgba(234,179,8,.1); border-bottom:1px solid rgba(234,179,8,.25);
+    padding:8px 20px; text-align:center;
+    font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--yw);
+    text-transform:uppercase; flex-shrink:0; display:none;
+  }
+
+  .sim-body {
+    flex:1; overflow-y:auto; display:flex; flex-direction:column;
+    align-items:center; padding:24px 20px 32px; gap:20px;
+  }
+
+  /* Gauge */
+  .sim-gauge-wrap { position:relative; width:100%; max-width:320px; }
+  .sim-gauge-svg { width:100%; display:block; overflow:visible; }
+
+  /* Stats row */
+  .sim-stats {
+    display:flex; gap:12px; width:100%; max-width:420px;
+  }
+  .sim-stat {
+    flex:1; background:var(--bg2); border:1px solid var(--bd);
+    border-radius:12px; padding:14px 10px; text-align:center;
+  }
+  .sim-stat-val { font-size:clamp(20px,5vw,28px); font-weight:800; color:#fff; letter-spacing:-.03em; }
+  .sim-stat-lbl { font-size:9px; color:var(--mu); letter-spacing:.1em; text-transform:uppercase; margin-top:4px; }
+
+  /* Throttle hold button */
+  .sim-rev-btn {
+    width:100%; max-width:420px;
+    background:var(--rd); color:#fff;
+    border:none; border-radius:16px; padding:24px;
+    font-size:17px; font-weight:800; letter-spacing:.04em;
+    cursor:pointer; transition:background .1s, transform .1s;
+    touch-action:none; user-select:none;
+    -webkit-user-select:none;
+    box-shadow:0 0 40px rgba(232,41,60,0.25);
+  }
+  .sim-rev-btn:active, .sim-rev-btn.revving {
+    background:#ff1a2e; transform:scale(0.97);
+    box-shadow:0 0 60px rgba(232,41,60,0.5);
+  }
+
+  /* Desktop throttle slider */
+  .sim-throttle-wrap {
+    width:100%; max-width:420px; display:flex; align-items:center; gap:12px;
+  }
+  .sim-throttle-label { font-size:10px; color:var(--mu); letter-spacing:.08em; white-space:nowrap; }
+  .sim-throttle-slider {
+    flex:1; -webkit-appearance:none; height:6px;
+    background:var(--bg3); border-radius:6px; outline:none; cursor:pointer;
+    border:1px solid var(--bd);
+  }
+  .sim-throttle-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; width:22px; height:22px;
+    background:var(--rd); border-radius:50%; cursor:pointer;
+    box-shadow:0 0 12px rgba(232,41,60,.5);
+  }
+
+  /* Visualizer */
+  .sim-viz {
+    display:flex; align-items:flex-end; gap:3px; height:50px;
+    width:100%; max-width:420px; padding:0 4px;
+  }
+  .viz-bar {
+    flex:1; background:var(--rd); border-radius:2px 2px 0 0;
+    height:4px; transition:height .05s; opacity:0.7;
+  }
+
+  /* Mobile-specific improvements */
+  @media(max-width:640px) {
+    .hero { padding: 110px 20px 60px; }
+    h1 { font-size: clamp(42px,11vw,72px); }
+    .hero-tagline { font-size: 14px; }
+    .btn { padding: 13px 22px; font-size: 14px; }
+    .hero-stats { gap:20px; margin-top:40px; }
+    .hero-stat-val { font-size: 28px; }
+    .section { padding: 56px 18px; }
+    h2 { font-size: clamp(24px,6vw,36px); }
+    .chain { padding:20px 14px; }
+    .chain-row { gap:4px; }
+    .c-node { padding:10px 10px; min-width:72px; }
+    .c-node-name { font-size:10px; }
+    .c-arr { font-size:12px; padding:0 2px; }
+    .price-card { padding:20px; }
+    .price-val { font-size:30px; }
+    .profiles { grid-template-columns: 1fr 1fr; gap:10px; }
+    .prof { padding:16px 10px; }
+    .prof-icon { font-size:24px; }
+    nav { padding:0 16px; }
+    .foot-links { flex-wrap:wrap; gap:12px; justify-content:center; }
+  }
+  @media(max-width:380px) {
+    .profiles { grid-template-columns: 1fr; }
+    .sim-stats { flex-direction:column; }
+  }
 
   /* ── ROADMAP ── */
   .rm { display:flex; flex-direction:column; gap:0; position:relative; }
@@ -666,35 +808,40 @@
   <p class="lead">Each profile is a set of studio-recorded WAV loops — idle, full throttle, and crackle — pitch-shifted in real time to match your driving.</p>
 
   <div class="profiles fade">
-    <div class="prof live-prof">
+    <div class="prof live-prof" onclick="openSim('test')">
       <div class="prof-icon">🎙️</div>
       <div class="prof-name">Test Pack v1</div>
       <div class="prof-sub">Current prototype</div>
       <div class="prof-tag"><span class="ctag t-live">Live</span></div>
+      <div class="prof-try">▶ TRY IT</div>
     </div>
-    <div class="prof soon-prof">
+    <div class="prof soon-prof" onclick="openSim('v8')">
       <div class="prof-icon">🏎️</div>
       <div class="prof-name">V8 American</div>
       <div class="prof-sub">LS3 / 5.0 Coyote</div>
       <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-try">▶ PREVIEW</div>
     </div>
-    <div class="prof soon-prof">
+    <div class="prof soon-prof" onclick="openSim('v10')">
       <div class="prof-icon">🇮🇹</div>
       <div class="prof-name">V10 Italia</div>
       <div class="prof-sub">Lamborghini LP640</div>
       <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-try">▶ PREVIEW</div>
     </div>
-    <div class="prof soon-prof">
+    <div class="prof soon-prof" onclick="openSim('flat6')">
       <div class="prof-icon">🥊</div>
       <div class="prof-name">Flat-6</div>
       <div class="prof-sub">Porsche 911 GT3</div>
       <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-try">▶ PREVIEW</div>
     </div>
-    <div class="prof soon-prof">
+    <div class="prof soon-prof" onclick="openSim('f1')">
       <div class="prof-icon">🏁</div>
       <div class="prof-name">F1 Hybrid</div>
       <div class="prof-sub">Mercedes PU106</div>
       <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-try">▶ PREVIEW</div>
     </div>
   </div>
 
@@ -962,6 +1109,78 @@
   <div class="foot-copy">© 2026 Resoniq · Active Sound for EVs · Prototype Phase</div>
 </footer>
 
+<!-- ══ SOUND SIMULATOR OVERLAY ══ -->
+<div id="sim-overlay" class="sim-overlay" role="dialog" aria-modal="true">
+  <div class="sim-header">
+    <button class="sim-back" onclick="closeSim()">← Back</button>
+    <div class="sim-profile-id">
+      <span class="sim-profile-icon" id="sim-icon">🎙️</span>
+      <span class="sim-profile-name" id="sim-name">Test Pack v1</span>
+    </div>
+    <div class="sim-vol-wrap">
+      <span class="sim-vol-icon">🔊</span>
+      <input type="range" class="sim-vol-slider" id="sim-vol" min="0" max="100" value="70" oninput="engine&&engine.setVolume(this.value)">
+    </div>
+  </div>
+
+  <div class="sim-preview-banner" id="sim-banner">⚡ SYNTHESIS PREVIEW — Full pack coming soon</div>
+
+  <div class="sim-body">
+    <!-- RPM Gauge -->
+    <div class="sim-gauge-wrap">
+      <!-- cx=150 cy=150 r=105 | 8-o'clock(240°) → 4-o'clock(480°=120°) | 240° sweep -->
+      <!-- start=(59.1,202.5)  end=(240.9,202.5)  top=(150,45)           -->
+      <svg class="sim-gauge-svg" viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg">
+        <!-- Tick marks -->
+        <g id="gauge-ticks" stroke="rgba(255,255,255,0.13)" stroke-width="1.5" fill="none"></g>
+        <!-- Background track -->
+        <path d="M 59.1,202.5 A 105 105 0 1 1 240.9,202.5" fill="none" stroke="#27272a" stroke-width="13" stroke-linecap="round"/>
+        <!-- Active arc (filled by JS) -->
+        <path id="gauge-active" d="" fill="none" stroke="#22c55e" stroke-width="13" stroke-linecap="round"/>
+        <!-- Loading indicator -->
+        <text id="gauge-loading" x="150" y="135" fill="#52525b" font-size="11" text-anchor="middle" font-family="-apple-system,sans-serif">Loading…</text>
+        <!-- RPM value -->
+        <text id="sim-rpm-val" x="150" y="145" fill="#fff" font-size="48" font-weight="900" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,sans-serif" letter-spacing="-2" style="display:none">0</text>
+        <text x="150" y="170" fill="#52525b" font-size="11" font-weight="700" text-anchor="middle" font-family="-apple-system,sans-serif" letter-spacing="4">RPM</text>
+        <text id="gauge-max-lbl" x="150" y="186" fill="#3f3f46" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif"></text>
+        <!-- 0 label (left) -->
+        <text x="42" y="222" fill="#3f3f46" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">0</text>
+        <!-- Max label (right, set by JS) -->
+        <text id="gauge-max-tick" x="258" y="222" fill="#3f3f46" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif"></text>
+      </svg>
+    </div>
+
+    <!-- Stats -->
+    <div class="sim-stats">
+      <div class="sim-stat">
+        <div class="sim-stat-val" id="sim-speed-val">0</div>
+        <div class="sim-stat-lbl">km/h</div>
+      </div>
+      <div class="sim-stat">
+        <div class="sim-stat-val" id="sim-throttle-val">0%</div>
+        <div class="sim-stat-lbl">Throttle</div>
+      </div>
+      <div class="sim-stat">
+        <div class="sim-stat-val" id="sim-gear-val">—</div>
+        <div class="sim-stat-lbl">Gear</div>
+      </div>
+    </div>
+
+    <!-- Hold to Rev button -->
+    <button class="sim-rev-btn" id="sim-rev-btn">HOLD TO REV</button>
+
+    <!-- Desktop throttle slider -->
+    <div class="sim-throttle-wrap">
+      <span class="sim-throttle-label">THROTTLE</span>
+      <input type="range" class="sim-throttle-slider" id="sim-throttle" min="0" max="100" value="0">
+      <span class="sim-throttle-label">100%</span>
+    </div>
+
+    <!-- Visualizer -->
+    <div class="sim-viz" id="sim-viz"></div>
+  </div>
+</div>
+
 <script>
   // Scroll fade-in
   const obs = new IntersectionObserver((entries) => {
@@ -1038,14 +1257,339 @@
 
   // Trigger counts when hero is visible
   const heroObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting) {
-        heroObs.disconnect();
-      }
-    });
+    entries.forEach(e => { if(e.isIntersecting) heroObs.disconnect(); });
   }, { threshold: 0.5 });
   const heroEl = document.querySelector('.hero');
   if(heroEl) heroObs.observe(heroEl);
+
+  /* ══════════════════════════════════════════
+     SOUND SIMULATOR — REAL WAV + SYNTH
+  ══════════════════════════════════════════ */
+
+  const SIM_PROFILES = {
+    test:  { name:'Test Pack v1', icon:'🎙️', live:true,  color:'#22c55e', maxRPM:7500,  idleRPM:780,  useRealSamples:true,
+             idleRate:[0.85,1.05], engRate:[0.72,1.62] },
+    v8:    { name:'V8 American',  icon:'🏎️', live:false, color:'#e8293c', maxRPM:7000,  idleRPM:720,
+             baseFreq:38, maxFreq:148, wave:'sawtooth', filterBase:280, filterMax:1900, filterQ:3.5 },
+    v10:   { name:'V10 Italia',   icon:'🇮🇹', live:false, color:'#f97316', maxRPM:9000,  idleRPM:900,
+             baseFreq:54, maxFreq:260, wave:'sawtooth', filterBase:480, filterMax:4200, filterQ:5 },
+    flat6: { name:'Flat-6',       icon:'🥊', live:false, color:'#a855f7', maxRPM:9200,  idleRPM:950,
+             baseFreq:48, maxFreq:215, wave:'square',   filterBase:400, filterMax:3400, filterQ:4 },
+    f1:    { name:'F1 Hybrid',    icon:'🏁', live:false, color:'#3b82f6', maxRPM:15000, idleRPM:3000,
+             baseFreq:95, maxFreq:410, wave:'sawtooth', filterBase:900, filterMax:7800, filterQ:8 },
+  };
+
+  // Gauge geometry helpers (clock convention: 0°=12 o'clock, clockwise)
+  const G = { cx:150, cy:150, r:105, startClock:240, sweep:240 };
+  function clockPt(deg) {
+    const rad = deg * Math.PI / 180;
+    return { x: G.cx + G.r * Math.sin(rad), y: G.cy - G.r * Math.cos(rad) };
+  }
+  function updateGaugeArc(ratio, color) {
+    const arc = document.getElementById('gauge-active');
+    if(!arc) return;
+    if(ratio < 0.008) { arc.setAttribute('d',''); return; }
+    const s = clockPt(G.startClock);
+    const e = clockPt(G.startClock + G.sweep * ratio);
+    const lg = G.sweep * ratio > 180 ? 1 : 0;
+    arc.setAttribute('d', `M${s.x.toFixed(1)},${s.y.toFixed(1)} A${G.r} ${G.r} 0 ${lg} 1 ${e.x.toFixed(1)},${e.y.toFixed(1)}`);
+    // Color: green → yellow → red
+    const hue = ratio < 0.6 ? 142 : ratio < 0.85 ? 45 : 4;
+    arc.setAttribute('stroke', color || `hsl(${hue},88%,52%)`);
+  }
+
+  // Build gauge ticks
+  (function() {
+    const ticks = document.getElementById('gauge-ticks');
+    if(!ticks) return;
+    for(let i=0;i<=20;i++) {
+      const pt_out = clockPt(G.startClock + G.sweep*(i/20));
+      const rIn = i%4===0 ? G.r-13 : G.r-7;
+      // inner point
+      const deg = G.startClock + G.sweep*(i/20);
+      const rad = deg*Math.PI/180;
+      const x2 = G.cx + rIn*Math.sin(rad), y2 = G.cy - rIn*Math.cos(rad);
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', pt_out.x.toFixed(1)); line.setAttribute('y1', pt_out.y.toFixed(1));
+      line.setAttribute('x2', x2.toFixed(1));        line.setAttribute('y2', y2.toFixed(1));
+      line.setAttribute('stroke-width', i%4===0 ? 2 : 1);
+      ticks.appendChild(line);
+    }
+  })();
+
+  // Build visualizer bars
+  (function() {
+    const viz = document.getElementById('sim-viz');
+    if(viz) for(let i=0;i<32;i++) {
+      const b=document.createElement('div'); b.className='viz-bar'; viz.appendChild(b);
+    }
+  })();
+
+  let engine = null;
+
+  /* ── REAL-SAMPLE ENGINE (Test Pack v1) ── */
+  class SampleEngine {
+    constructor(profile) {
+      this.profile = profile;
+      this.rpm = profile.idleRPM;
+      this.throttle = 0;
+      this.running = false;
+      this.animId = null;
+      this.prevThrottle = 0;
+      this.crackleTimeout = null;
+    }
+
+    async load() {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = document.getElementById('sim-vol').value / 100 * 0.8;
+      this.masterGain.connect(this.ctx.destination);
+
+      // Load idle + engine + crackle
+      const load = async (url) => {
+        const r = await fetch(url);
+        const ab = await r.arrayBuffer();
+        return this.ctx.decodeAudioData(ab);
+      };
+      const [idleBuf, engBuf, crackleBuf, burbleBuf] = await Promise.all([
+        load('sounds/idle.wav'), load('sounds/engine.wav'),
+        load('sounds/crackle.wav'), load('sounds/burble.wav')
+      ]);
+
+      // Idle layer
+      this.idleSrc = this.ctx.createBufferSource();
+      this.idleSrc.buffer = idleBuf; this.idleSrc.loop = true;
+      this.idleGain = this.ctx.createGain(); this.idleGain.gain.value = 1;
+      this.idleSrc.connect(this.idleGain); this.idleGain.connect(this.masterGain);
+
+      // Engine layer
+      this.engSrc = this.ctx.createBufferSource();
+      this.engSrc.buffer = engBuf; this.engSrc.loop = true;
+      this.engGain = this.ctx.createGain(); this.engGain.gain.value = 0;
+      this.engSrc.connect(this.engGain); this.engGain.connect(this.masterGain);
+
+      // Crackle buffer (triggered, not looped)
+      this.crackleBuf = crackleBuf;
+      this.burbleBuf  = burbleBuf;
+
+      this.idleSrc.start(); this.engSrc.start();
+      this.running = true;
+
+      // Show RPM display
+      document.getElementById('gauge-loading').style.display = 'none';
+      document.getElementById('sim-rpm-val').style.display = 'block';
+      this._loop();
+    }
+
+    _loop() {
+      if(!this.running) return;
+      const p = this.profile;
+      const t = this.ctx.currentTime;
+      const th = this.throttle / 100;
+
+      // RPM tracking
+      const targetRpm = p.idleRPM + (p.maxRPM - p.idleRPM) * th * 0.94;
+      const inertia = th > 0 ? 0.07 : 0.042;
+      this.rpm += (targetRpm - this.rpm) * inertia;
+      const ratio = Math.max(0,(this.rpm - p.idleRPM)/(p.maxRPM - p.idleRPM));
+
+      // Crossfade idle → engine
+      const idleGain = Math.max(0, 1 - th * 3);
+      const engGain  = Math.min(1, th * 2);
+      this.idleGain.gain.setTargetAtTime(idleGain, t, 0.06);
+      this.engGain.gain.setTargetAtTime(engGain,  t, 0.06);
+
+      // Pitch via playback rate
+      const [ir0,ir1] = p.idleRate, [er0,er1] = p.engRate;
+      this.idleSrc.playbackRate.setTargetAtTime(ir0 + th*(ir1-ir0), t, 0.06);
+      this.engSrc.playbackRate.setTargetAtTime(er0 + ratio*(er1-er0), t, 0.05);
+
+      // Crackle on lift-off from high throttle
+      if(this.prevThrottle > 65 && th < 0.15 && !this.crackleTimeout) {
+        this._playOnce(this.crackleBuf, 0.45);
+        this.crackleTimeout = setTimeout(() => this.crackleTimeout=null, 1200);
+      }
+      // Burble on moderate deceleration
+      if(this.prevThrottle > 35 && th < 0.08 && !this.crackleTimeout) {
+        this._playOnce(this.burbleBuf, 0.3);
+        this.crackleTimeout = setTimeout(() => this.crackleTimeout=null, 800);
+      }
+      this.prevThrottle = th * 100;
+
+      this._updateUI(ratio);
+      this.animId = requestAnimationFrame(() => this._loop());
+    }
+
+    _playOnce(buffer, vol) {
+      if(!buffer || !this.ctx) return;
+      const src = this.ctx.createBufferSource();
+      const g   = this.ctx.createGain();
+      src.buffer = buffer;
+      g.gain.value = vol;
+      src.connect(g); g.connect(this.masterGain);
+      src.start();
+    }
+
+    _updateUI(ratio) {
+      const rpm = Math.round(this.rpm);
+      document.getElementById('sim-rpm-val').textContent = rpm >= 1000 ? (rpm/1000).toFixed(1)+'k' : rpm;
+      this._updateStats(ratio);
+      updateGaugeArc(ratio);
+    }
+
+    setThrottle(v) { this.throttle = Math.max(0,Math.min(100,v)); }
+    setVolume(v)   { if(this.masterGain) this.masterGain.gain.setTargetAtTime(v/100*0.8, this.ctx.currentTime, 0.1); }
+
+    stop() {
+      this.running = false;
+      if(this.animId) cancelAnimationFrame(this.animId);
+      if(this.crackleTimeout) clearTimeout(this.crackleTimeout);
+      if(this.ctx) {
+        try { this.idleSrc.stop(); this.engSrc.stop(); } catch(e){}
+        this.ctx.close(); this.ctx = null;
+      }
+    }
+  }
+
+  /* ── SYNTH ENGINE (coming-soon packs) ── */
+  class SynthEngine {
+    constructor(profile) {
+      this.profile = profile;
+      this.rpm = profile.idleRPM;
+      this.throttle = 0;
+      this.running = false;
+      this.animId = null;
+    }
+
+    init() {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const p = this.profile;
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = document.getElementById('sim-vol').value / 100 * 0.7;
+      this.comp = this.ctx.createDynamicsCompressor();
+      this.comp.threshold.value=-18; this.comp.ratio.value=4;
+      this.masterGain.connect(this.ctx.destination);
+      this.comp.connect(this.masterGain);
+      this.filter = this.ctx.createBiquadFilter();
+      this.filter.type='bandpass'; this.filter.frequency.value=p.filterBase; this.filter.Q.value=p.filterQ;
+      this.filter.connect(this.comp);
+      const mkOsc = (type, freq, gain, dest) => {
+        const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+        o.type=type; o.frequency.value=freq; g.gain.value=gain;
+        o.connect(g); g.connect(dest); o.start(); return {o,g};
+      };
+      this.n1=mkOsc(p.wave,p.baseFreq,0.5,this.filter);
+      this.n2=mkOsc('sawtooth',p.baseFreq*2,0.26,this.filter);
+      this.n3=mkOsc('sine',p.baseFreq*0.5,0.16,this.comp);
+      this.running=true;
+
+      // Show display
+      document.getElementById('gauge-loading').style.display='none';
+      document.getElementById('sim-rpm-val').style.display='block';
+      this._loop();
+    }
+
+    _loop() {
+      if(!this.running) return;
+      const p=this.profile, t=this.ctx.currentTime, th=this.throttle/100;
+      const targetRpm=p.idleRPM+(p.maxRPM-p.idleRPM)*th*0.94;
+      this.rpm+=(targetRpm-this.rpm)*(th>0?0.07:0.042);
+      const ratio=Math.max(0,(this.rpm-p.idleRPM)/(p.maxRPM-p.idleRPM));
+      const freq=p.baseFreq+(p.maxFreq-p.baseFreq)*ratio;
+      this.n1.o.frequency.setTargetAtTime(freq,t,0.04);
+      this.n2.o.frequency.setTargetAtTime(freq*2,t,0.04);
+      this.n3.o.frequency.setTargetAtTime(freq*0.5,t,0.06);
+      this.filter.frequency.setTargetAtTime(p.filterBase+(p.filterMax-p.filterBase)*ratio,t,0.08);
+      const gv=Math.pow(ratio,0.55)*0.5+0.08;
+      this.n1.g.gain.setTargetAtTime(gv,t,0.04);
+      this.n2.g.gain.setTargetAtTime(gv*0.5,t,0.04);
+      this.n3.g.gain.setTargetAtTime(gv*0.3,t,0.06);
+      document.getElementById('sim-rpm-val').textContent=Math.round(this.rpm)>=1000?(Math.round(this.rpm)/1000).toFixed(1)+'k':Math.round(this.rpm);
+      this._updateStats(ratio);
+      updateGaugeArc(ratio);
+      this.animId=requestAnimationFrame(()=>this._loop());
+    }
+
+    setThrottle(v){this.throttle=Math.max(0,Math.min(100,v));}
+    setVolume(v){if(this.masterGain)this.masterGain.gain.setTargetAtTime(v/100*0.7,this.ctx.currentTime,0.1);}
+    stop(){
+      this.running=false;
+      if(this.animId)cancelAnimationFrame(this.animId);
+      if(this.ctx){try{this.n1.o.stop();this.n2.o.stop();this.n3.o.stop();}catch(e){}this.ctx.close();this.ctx=null;}
+    }
+  }
+
+  // Shared UI update (used by both engines)
+  SampleEngine.prototype._updateStats = SynthEngine.prototype._updateStats = function(ratio) {
+    document.getElementById('sim-speed-val').textContent = Math.round(ratio*260);
+    document.getElementById('sim-throttle-val').textContent = Math.round(this.throttle)+'%';
+    const gears=['N','1st','2nd','3rd','4th','5th','6th','7th','8th'];
+    document.getElementById('sim-gear-val').textContent = gears[Math.min(Math.ceil(ratio*8),8)];
+    const bars=document.querySelectorAll('.viz-bar'), now=Date.now();
+    bars.forEach((b,i)=>{
+      const h=ratio<0.02?4:(Math.abs(Math.sin(now/60+i*0.9))*0.5+0.5)*ratio*48+4;
+      b.style.height=h+'px'; b.style.opacity=0.4+ratio*0.6;
+    });
+  };
+
+  /* ── Open/close ── */
+  function openSim(id) {
+    const p = SIM_PROFILES[id];
+    if(!p) return;
+    if(engine) { engine.stop(); engine=null; }
+
+    document.getElementById('sim-icon').textContent = p.icon;
+    document.getElementById('sim-name').textContent = p.name;
+    document.getElementById('gauge-max-lbl').textContent = (p.maxRPM/1000).toFixed(0)+'k max';
+    document.getElementById('gauge-max-tick').textContent = (p.maxRPM/1000).toFixed(0)+'k';
+    document.getElementById('sim-banner').style.display = p.live ? 'none' : 'block';
+    document.getElementById('sim-rpm-val').style.display = 'none';
+    document.getElementById('gauge-loading').style.display = 'block';
+    document.getElementById('gauge-loading').textContent = p.live ? 'Loading…' : 'Starting…';
+    document.getElementById('sim-speed-val').textContent='0';
+    document.getElementById('sim-throttle-val').textContent='0%';
+    document.getElementById('sim-gear-val').textContent='N';
+    document.getElementById('sim-throttle').value=0;
+    const arc=document.getElementById('gauge-active'); if(arc) arc.setAttribute('d','');
+
+    document.getElementById('sim-overlay').classList.add('open');
+    document.body.style.overflow='hidden';
+
+    setTimeout(async () => {
+      if(p.useRealSamples) {
+        engine = new SampleEngine(p);
+        await engine.load();
+      } else {
+        engine = new SynthEngine(p);
+        engine.init();
+      }
+    }, 200);
+  }
+
+  function closeSim() {
+    document.getElementById('sim-overlay').classList.remove('open');
+    document.body.style.overflow='';
+    if(engine){engine.stop();engine=null;}
+    document.getElementById('sim-throttle').value=0;
+  }
+
+  // Hold-to-rev
+  const revBtn=document.getElementById('sim-rev-btn');
+  function startRev(){if(engine)engine.setThrottle(100);revBtn.classList.add('revving');}
+  function stopRev() {if(engine)engine.setThrottle(0);  revBtn.classList.remove('revving');}
+  revBtn.addEventListener('mousedown',startRev);
+  revBtn.addEventListener('mouseup',stopRev);
+  revBtn.addEventListener('mouseleave',stopRev);
+  revBtn.addEventListener('touchstart',e=>{e.preventDefault();startRev();},{passive:false});
+  revBtn.addEventListener('touchend',  e=>{e.preventDefault();stopRev(); },{passive:false});
+
+  // Throttle slider (desktop — release snaps back to 0)
+  const thSlider=document.getElementById('sim-throttle');
+  thSlider.addEventListener('input',function(){if(engine)engine.setThrottle(+this.value);});
+  thSlider.addEventListener('mouseup',function(){this.value=0;if(engine)engine.setThrottle(0);});
+  thSlider.addEventListener('touchend',function(){this.value=0;if(engine)engine.setThrottle(0);});
+
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSim();});
 </script>
 </body>
 </html>
