@@ -1457,22 +1457,40 @@
       this._starting = true;
       simSetPowerState('starting');
 
+      const IDLE_GAIN = 0.55;
+      const XFADE     = 0.60; // crossfade overlap in seconds
+
       if(this.startupBuf) {
         const dur = this.startupBuf.duration;
-        this._playOnce(this.startupBuf, 0.85);
-        // Begin fading idle in near the end of startup (same as ESP firmware startup sequence)
-        const fadeDelay = Math.max(0, dur - 0.6);
-        setTimeout(() => {
-          if(this.ctx) this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
-        }, fadeDelay * 1000);
+        const t   = this.ctx.currentTime;
+
+        // Startup plays through its own gain node at the same level as idle
+        const startupGain = this.ctx.createGain();
+        startupGain.gain.value = IDLE_GAIN;
+        startupGain.connect(this.masterGain);
+
+        const startupSrc = this.ctx.createBufferSource();
+        startupSrc.buffer = this.startupBuf;
+        startupSrc.connect(startupGain);
+        startupSrc.start(t);
+
+        // Simultaneous crossfade: startup fades OUT, idle fades IN
+        const xStart = t + Math.max(0, dur - XFADE);
+        const TC     = XFADE / 4; // time-constant (~98% done within XFADE seconds)
+
+        startupGain.gain.setTargetAtTime(0,         xStart, TC);
+        this.idleG.gain.setTargetAtTime(IDLE_GAIN,  xStart, TC);
+
         setTimeout(() => {
           this._starting = false;
           this.engineOn  = true;
           simSetPowerState('on');
-        }, dur * 1000);
+          try { startupGain.disconnect(); } catch(e) {}
+        }, (dur + 0.15) * 1000);
+
       } else {
-        // No startup file — fade straight into idle (short ~0.8s ramp)
-        if(this.ctx) this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
+        // No startup file — simple fade into idle
+        this.idleG.gain.setTargetAtTime(IDLE_GAIN, this.ctx.currentTime, 0.30);
         setTimeout(() => {
           this._starting = false;
           this.engineOn  = true;
