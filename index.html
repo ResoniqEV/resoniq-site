@@ -333,6 +333,31 @@
     box-shadow:0 0 60px rgba(232,41,60,0.5);
   }
 
+  /* Engine power button */
+  .sim-power-btn {
+    width:100%; max-width:420px;
+    border:none; border-radius:16px; padding:24px;
+    font-size:17px; font-weight:800; letter-spacing:.04em;
+    cursor:pointer; transition:background .15s, transform .1s, opacity .15s;
+    touch-action:none; user-select:none; -webkit-user-select:none;
+  }
+  .sim-power-start {
+    background:var(--gn); color:#fff;
+    box-shadow:0 0 40px rgba(34,197,94,0.3);
+  }
+  .sim-power-start:active { background:#16a34a; transform:scale(0.97); }
+  .sim-power-starting {
+    background:var(--bg3); color:var(--mu);
+    border:1px solid var(--bd2); cursor:not-allowed; opacity:.7;
+    box-shadow:none;
+  }
+  .sim-power-stop {
+    background:var(--bg3); color:var(--mu);
+    border:1px solid var(--bd2); font-size:13px; padding:12px 24px;
+    box-shadow:none;
+  }
+  .sim-power-stop:active { background:var(--bd); color:var(--tx2); }
+
   /* Desktop throttle slider */
   .sim-throttle-wrap {
     width:100%; max-width:420px; display:flex; align-items:center; gap:12px;
@@ -1166,11 +1191,14 @@
       </div>
     </div>
 
+    <!-- Engine on/off power button -->
+    <button class="sim-power-btn sim-power-start" id="sim-power-btn" style="display:none;">⚡ ENGINE START</button>
+
     <!-- Hold to Rev button -->
-    <button class="sim-rev-btn" id="sim-rev-btn">HOLD TO REV</button>
+    <button class="sim-rev-btn" id="sim-rev-btn" style="display:none;">HOLD TO REV</button>
 
     <!-- Desktop throttle slider -->
-    <div class="sim-throttle-wrap">
+    <div class="sim-throttle-wrap" id="sim-throttle-wrap" style="display:none;">
       <span class="sim-throttle-label">THROTTLE</span>
       <input type="range" class="sim-throttle-slider" id="sim-throttle" min="0" max="100" value="0">
       <span class="sim-throttle-label">100%</span>
@@ -1364,7 +1392,9 @@
       this.rl_bounce_offset= 0;
       this.using_idle          = true;
       this.throttle_was_high   = false;
-      this.last_crackle_ms     = 0;
+
+      this.engineOn  = false;   // starts off — user must press ENGINE START
+      this._starting = false;
 
       this.running = false;
       this.animId  = null;
@@ -1383,19 +1413,26 @@
       };
 
       const f = this.profile.folder || 'sounds/';
-      // crackle falls back to default pack if not in this folder
-      const crackleUrl = f === 'sounds/' ? 'sounds/crackle.wav'
-                       : (await fetch(f+'crackle.wav').then(r=>r.ok ? f+'crackle.wav' : 'sounds/crackle.wav').catch(()=>'sounds/crackle.wav'));
-      const [idleBuf, engBuf, crackleBuf] = await Promise.all([
+
+      // Load startup (optional — not every pack has one)
+      const tryLoad = async url => {
+        try {
+          const r = await fetch(url);
+          if(!r.ok) return null;
+          return this.ctx.decodeAudioData(await r.arrayBuffer());
+        } catch(e) { return null; }
+      };
+
+      const [idleBuf, engBuf, startupBuf] = await Promise.all([
         loadBuf(f+'idle.wav'),
         loadBuf(f+'engine.wav'),
-        loadBuf(crackleUrl),
+        tryLoad(f+'startup.wav'),
       ]);
 
       // Both layers share one playback rate (ESP uses single sm_rate for both files)
       this.idleSrc = this.ctx.createBufferSource();
       this.idleSrc.buffer = idleBuf; this.idleSrc.loop = true;
-      this.idleG = this.ctx.createGain(); this.idleG.gain.value = 0;
+      this.idleG = this.ctx.createGain(); this.idleG.gain.value = 0; // silent until ENGINE START
       this.idleSrc.connect(this.idleG); this.idleG.connect(this.masterGain);
 
       this.engSrc = this.ctx.createBufferSource();
@@ -1403,17 +1440,64 @@
       this.engG = this.ctx.createGain(); this.engG.gain.value = 0;
       this.engSrc.connect(this.engG); this.engG.connect(this.masterGain);
 
-      this.crackleBuf = crackleBuf;
+      this.startupBuf = startupBuf;
       this.idleSrc.start(); this.engSrc.start();
-
-      // Firmware starts in idle state: target_idle_gain = cfg_vol_idle (mapped 0.55)
-      this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
+      // Engine starts OFF — user presses ENGINE START to begin
 
       this.running = true;
       document.getElementById('gauge-loading').style.display = 'none';
       document.getElementById('sim-rpm-val').style.display   = 'block';
       this.lastTS = performance.now();
       this._loop();
+      simSetPowerState('off');
+    }
+
+    startEngine() {
+      if(this.engineOn || this._starting) return;
+      this._starting = true;
+      simSetPowerState('starting');
+
+      if(this.startupBuf) {
+        const dur = this.startupBuf.duration;
+        this._playOnce(this.startupBuf, 0.85);
+        // Begin fading idle in near the end of startup (same as ESP firmware startup sequence)
+        const fadeDelay = Math.max(0, dur - 0.6);
+        setTimeout(() => {
+          if(this.ctx) this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
+        }, fadeDelay * 1000);
+        setTimeout(() => {
+          this._starting = false;
+          this.engineOn  = true;
+          simSetPowerState('on');
+        }, dur * 1000);
+      } else {
+        // No startup file — fade straight into idle (short ~0.8s ramp)
+        if(this.ctx) this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
+        setTimeout(() => {
+          this._starting = false;
+          this.engineOn  = true;
+          simSetPowerState('on');
+        }, 800);
+      }
+    }
+
+    stopEngine() {
+      this._starting = false;
+      this.engineOn  = false;
+      this.throttle  = 0;
+      this.speedKph  = 0;
+      this.smooth_rpm = 0;
+      this.virtual_rpm = 0;
+      this.sm_rate   = 0.38;
+      this.using_idle = true;
+      this.throttle_was_high = false;
+      if(this.ctx) {
+        const t = this.ctx.currentTime;
+        this.idleG.gain.setTargetAtTime(0, t, 0.12);
+        this.engG.gain.setTargetAtTime(0,  t, 0.12);
+      }
+      document.getElementById('sim-throttle').value = 0;
+      simSetPowerState('off');
     }
 
     _loop() {
@@ -1422,6 +1506,16 @@
       const now = performance.now();
       const dt  = Math.min((now - this.lastTS) / 1000, 0.05); // seconds, capped
       this.lastTS = now;
+
+      // Engine off — show zeros, keep loop alive
+      if(!this.engineOn) {
+        document.getElementById('sim-rpm-val').textContent = '0';
+        updateGaugeArc(0);
+        this._updateStats(0);
+        this.animId = requestAnimationFrame(() => this._loop());
+        return;
+      }
+
       const t   = this.ctx.currentTime;
       const th  = this.throttle; // 0-100
 
@@ -1514,17 +1608,6 @@
         this.idleG.gain.setTargetAtTime(0,    t, 0.284);
         this.engG.gain.setTargetAtTime(0.75,  t, 0.284); // cfg_vol_engine mapped
       }
-
-      // check_crackle() PORT
-      // cfg_crackle_threshold=20, cfg_crackle_min_speed=8 kph, cfg_crackle_min_gap=180 ms
-      if(th > 20) this.throttle_was_high = true;
-      const gap_ok = (now - this.last_crackle_ms) > 180;
-      if(this.throttle_was_high && th < 5 && this.speedKph > 8 && gap_ok) {
-        this._playOnce(this.crackleBuf, 0.5);
-        this.last_crackle_ms   = now;
-        this.throttle_was_high = false;
-      }
-      if(this.speedKph <= 8 && th === 0) this.throttle_was_high = false;
 
       // UI: display virtual_rpm (0-8000) — same value as ESP web panel shows
       const ratio    = Math.min(this.virtual_rpm / 8000, 1);
@@ -1660,6 +1743,31 @@
     });
   };
 
+  /* ── Power state UI ── */
+  function simSetPowerState(state) {
+    const powerBtn    = document.getElementById('sim-power-btn');
+    const revBtn      = document.getElementById('sim-rev-btn');
+    const throttleWrap= document.getElementById('sim-throttle-wrap');
+    if(state === 'off') {
+      powerBtn.textContent = '⚡ ENGINE START';
+      powerBtn.disabled    = false;
+      powerBtn.className   = 'sim-power-btn sim-power-start';
+      powerBtn.style.display = '';
+      revBtn.style.display       = 'none';
+      throttleWrap.style.display = 'none';
+    } else if(state === 'starting') {
+      powerBtn.textContent = '⌛ STARTING…';
+      powerBtn.disabled    = true;
+      powerBtn.className   = 'sim-power-btn sim-power-starting';
+    } else if(state === 'on') {
+      powerBtn.textContent = '■ ENGINE OFF';
+      powerBtn.disabled    = false;
+      powerBtn.className   = 'sim-power-btn sim-power-stop';
+      revBtn.style.display       = '';
+      throttleWrap.style.display = '';
+    }
+  }
+
   /* ── Open/close ── */
   function openSim(id) {
     const p = SIM_PROFILES[id];
@@ -1681,6 +1789,11 @@
     document.getElementById('sim-throttle').value=0;
     const arc=document.getElementById('gauge-active'); if(arc) arc.setAttribute('d','');
 
+    // Reset power/throttle UI to off state
+    document.getElementById('sim-power-btn').style.display = 'none';
+    document.getElementById('sim-rev-btn').style.display       = 'none';
+    document.getElementById('sim-throttle-wrap').style.display = 'none';
+
     document.getElementById('sim-overlay').classList.add('open');
     document.body.style.overflow='hidden';
 
@@ -1701,6 +1814,16 @@
     if(engine){engine.stop();engine=null;}
     document.getElementById('sim-throttle').value=0;
   }
+
+  // Engine power button
+  document.getElementById('sim-power-btn').addEventListener('click', () => {
+    if(!engine || !(engine instanceof SampleEngine)) return;
+    if(engine.engineOn) {
+      engine.stopEngine();
+    } else if(!engine._starting) {
+      engine.startEngine();
+    }
+  });
 
   // Hold-to-rev
   const revBtn=document.getElementById('sim-rev-btn');
