@@ -830,10 +830,20 @@
 <section class="section" id="sound">
   <div class="eyebrow">Sound Library</div>
   <h2>Choose your engine</h2>
-  <p class="lead">Each profile is a set of studio-recorded WAV loops — idle, full throttle, and crackle — pitch-shifted in real time to match your driving.</p>
+  <p class="lead">Each profile is a set of studio-recorded WAV loops — idle, full throttle — pitch-shifted in real time to match your driving.</p>
+
+  <!-- Recommendation notice -->
+  <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:14px;">
+    <span style="font-size:20px;flex-shrink:0;margin-top:1px;">💡</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#22c55e;margin-bottom:4px;">Start here — Test Pack v1 is the only fully working demo</div>
+      <div style="font-size:12px;color:var(--tx3);line-height:1.6;">The V8 and V10 are early sound previews still being refined — audio quality and tuning are a work in progress. Flat-6 and F1 are synth placeholders. For the real Resoniq experience, try Test Pack v1 first.</div>
+    </div>
+  </div>
 
   <div class="profiles fade">
-    <div class="prof live-prof" onclick="openSim('test')">
+    <div class="prof live-prof" onclick="openSim('test')" style="position:relative;">
+      <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gn);color:#fff;font-size:9px;font-weight:800;letter-spacing:.1em;padding:3px 10px;border-radius:20px;white-space:nowrap;">⭐ TRY THIS FIRST</div>
       <div class="prof-icon">🎙️</div>
       <div class="prof-name">Test Pack v1</div>
       <div class="prof-sub">Current prototype</div>
@@ -844,34 +854,52 @@
       <div class="prof-icon">🏎️</div>
       <div class="prof-name">V8 American</div>
       <div class="prof-sub">LS3 / 5.0 Coyote</div>
-      <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-tag"><span class="ctag t-coming">Early Preview</span></div>
       <div class="prof-try">▶ PREVIEW</div>
     </div>
     <div class="prof soon-prof" onclick="openSim('v10')">
       <div class="prof-icon">🇮🇹</div>
       <div class="prof-name">V10 Italia</div>
       <div class="prof-sub">Lamborghini LP640</div>
-      <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
+      <div class="prof-tag"><span class="ctag t-coming">Early Preview</span></div>
       <div class="prof-try">▶ PREVIEW</div>
     </div>
-    <div class="prof soon-prof" onclick="openSim('flat6')">
+    <div class="prof soon-prof" onclick="openSim('flat6')" style="opacity:0.5;pointer-events:none;">
       <div class="prof-icon">🥊</div>
       <div class="prof-name">Flat-6</div>
       <div class="prof-sub">Porsche 911 GT3</div>
-      <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
-      <div class="prof-try">▶ PREVIEW</div>
+      <div class="prof-tag"><span class="ctag t-coming">Coming Soon</span></div>
     </div>
-    <div class="prof soon-prof" onclick="openSim('f1')">
+    <div class="prof soon-prof" onclick="openSim('f1')" style="opacity:0.5;pointer-events:none;">
       <div class="prof-icon">🏁</div>
       <div class="prof-name">F1 Hybrid</div>
       <div class="prof-sub">Mercedes PU106</div>
-      <div class="prof-tag"><span class="ctag t-coming">In Production</span></div>
-      <div class="prof-try">▶ PREVIEW</div>
+      <div class="prof-tag"><span class="ctag t-coming">Coming Soon</span></div>
     </div>
   </div>
 
-  <div class="hl" style="margin-top:24px;">
-    <p><strong>Sound pack roadmap:</strong> V8, V10, Flat-6, and F1 packs are currently in production. Each will be available as an in-app purchase at launch. Have a sound in mind? Let us know in the waitlist and we'll prioritize it.</p>
+  <!-- Sound suggestion box -->
+  <div style="margin-top:32px;background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:28px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-size:18px;">🎵</span>
+      <span style="font-size:15px;font-weight:700;color:#fff;">Suggest a sound pack</span>
+    </div>
+    <p style="font-size:13px;color:var(--tx3);margin-bottom:18px;line-height:1.6;">Got an engine you want to hear in your EV? Drop it below — every suggestion gets read and the most-requested ones get built first.</p>
+    <form id="suggest-form" onsubmit="submitSuggestion(event)" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input id="suggest-input" type="text" placeholder="e.g. Ferrari 458, BMW M3 E46, Dodge Viper V10…"
+        style="flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;
+               padding:12px 16px;font-size:14px;color:var(--tx);outline:none;transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--rd)'" onblur="this.style.borderColor='var(--bd2)'"
+        maxlength="120" required>
+      <button type="submit" id="suggest-btn"
+        style="background:var(--rd);color:#fff;border:none;border-radius:10px;padding:12px 22px;
+               font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap;">
+        Submit →
+      </button>
+    </form>
+    <div id="suggest-success" style="display:none;margin-top:12px;font-size:13px;color:var(--gn);font-weight:600;">
+      ✓ Got it — thanks for the suggestion!
+    </div>
   </div>
 </section>
 
@@ -1266,6 +1294,30 @@
       btn.disabled = false;
       btn.style.opacity = '1';
       btn.style.background = '#b91c2c';
+    }
+  }
+
+  // Sound suggestion form
+  async function submitSuggestion(e) {
+    e.preventDefault();
+    const suggestion = document.getElementById('suggest-input').value.trim();
+    const btn = document.getElementById('suggest-btn');
+    if(!suggestion) return;
+    btn.textContent = 'Sending…'; btn.disabled = true; btn.style.opacity = '0.7';
+    try {
+      const res = await fetch('https://formspree.io/f/mbdedgkz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ sound_suggestion: suggestion, _subject: 'Sound Pack Suggestion: ' + suggestion })
+      });
+      if(res.ok) {
+        document.getElementById('suggest-form').style.display = 'none';
+        document.getElementById('suggest-success').style.display = 'block';
+      } else {
+        btn.textContent = 'Try again'; btn.disabled = false; btn.style.opacity = '1';
+      }
+    } catch {
+      btn.textContent = 'Try again'; btn.disabled = false; btn.style.opacity = '1';
     }
   }
 
