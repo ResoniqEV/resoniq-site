@@ -205,24 +205,45 @@
   /* Desktop: single horizontal row */
   .chain-desktop { display:flex; align-items:center; gap:0; }
   .chain-mobile  { display:none; }
-  /* Mobile: snake 3+3 */
-  @media(max-width:640px) {
-    .chain-desktop { display:none; }
-    .chain-mobile  { display:flex; flex-direction:column; gap:0; }
-    .csm-row { display:flex; align-items:stretch; }
-    .csm-turn { position:relative; height:32px; margin:0; }
-    .csm-turn svg { position:absolute; top:0; right:0; width:34%; height:100%; overflow:visible; }
-  }
   .c-node {
     background:var(--bg3); border:1px solid var(--bd2); border-radius:12px;
     padding:14px 16px; text-align:center; flex:1; min-width:0;
   }
   .c-node.hi { border-color:rgba(232,41,60,.5); background:var(--rd4); }
   .c-node-icon { font-size:18px; margin-bottom:5px; }
-  .c-node-name { font-size:11px; font-weight:700; color:var(--tx2); white-space:nowrap; }
+  .c-node-name { font-size:11px; font-weight:700; color:var(--tx2); }
   .c-node-sub  { font-size:9px; color:var(--mu); margin-top:2px; font-family:var(--mo); }
   .c-arr { color:var(--bd2); font-size:13px; padding:0 5px; flex-shrink:0; white-space:nowrap; align-self:center; }
   .c-arr.r { color:var(--rd); }
+
+  /* Mobile: clean vertical flow list */
+  @media(max-width:640px) {
+    .chain { padding:20px 16px; }
+    .chain-desktop { display:none; }
+    .chain-mobile  { display:flex; flex-direction:column; position:relative; }
+    /* red vertical spine */
+    .chain-mobile::before {
+      content:''; position:absolute; left:22px; top:22px; bottom:22px; width:2px;
+      background:linear-gradient(to bottom, var(--rd), rgba(232,41,60,.15));
+      border-radius:2px;
+    }
+    .cm-step {
+      display:flex; align-items:center; gap:14px;
+      padding:10px 0;
+      position:relative;
+    }
+    /* dot on spine */
+    .cm-step::before {
+      content:''; width:10px; height:10px; border-radius:50%; flex-shrink:0;
+      background:var(--rd); box-shadow:0 0 0 3px rgba(232,41,60,.15);
+      margin-left:17px; z-index:1;
+    }
+    .cm-step.hi::before { box-shadow:0 0 0 3px rgba(232,41,60,.25), 0 0 12px rgba(232,41,60,.3); }
+    .cm-icon { font-size:20px; flex-shrink:0; width:28px; text-align:center; }
+    .cm-text { flex:1; }
+    .cm-name { font-size:13px; font-weight:700; color:var(--tx2); }
+    .cm-sub  { font-size:11px; color:var(--mu); margin-top:1px; font-family:var(--mo); }
+  }
 
   /* ── STATUS LIST ── */
   .slist { display:flex; flex-direction:column; gap:10px; }
@@ -884,54 +905,31 @@
       </div>
     </div>
 
-    <!-- MOBILE: 3+3 snake -->
+    <!-- MOBILE: clean vertical timeline -->
     <div class="chain-mobile">
-      <!-- Row 1 -->
-      <div class="csm-row">
-        <div class="c-node hi">
-          <div class="c-node-icon">🚗</div>
-          <div class="c-node-name">Your EV</div>
-          <div class="c-node-sub">OBD2 port</div>
-        </div>
-        <div class="c-arr r">──▶</div>
-        <div class="c-node">
-          <div class="c-node-icon">📡</div>
-          <div class="c-node-name">BLE Dongle</div>
-          <div class="c-node-sub">wireless</div>
-        </div>
-        <div class="c-arr">──▶</div>
-        <div class="c-node hi">
-          <div class="c-node-icon">🔲</div>
-          <div class="c-node-name">Resoniq Unit</div>
-          <div class="c-node-sub">processor</div>
-        </div>
+      <div class="cm-step hi">
+        <div class="cm-icon">🚗</div>
+        <div class="cm-text"><div class="cm-name">Your EV</div><div class="cm-sub">OBD2 port</div></div>
       </div>
-      <!-- SVG snake turn: comes down from right of row 1, goes into right of row 2 -->
-      <div class="csm-turn">
-        <svg viewBox="0 0 60 32" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M 2 2 Q 58 2 58 16 Q 58 30 2 30" stroke="#e8293c" stroke-width="2" stroke-linecap="round"/>
-          <polygon points="2,24 8,30 2,36" fill="#e8293c" transform="translate(-1,-6)"/>
-        </svg>
+      <div class="cm-step">
+        <div class="cm-icon">📡</div>
+        <div class="cm-text"><div class="cm-name">BLE Dongle</div><div class="cm-sub">plug-in, wireless</div></div>
       </div>
-      <!-- Row 2: sound packs on right (snake continues), speakers on left (end) -->
-      <div class="csm-row">
-        <div class="c-node hi">
-          <div class="c-node-icon">🔊</div>
-          <div class="c-node-name">Your Speakers</div>
-          <div class="c-node-sub">cabin + exterior</div>
-        </div>
-        <div class="c-arr r">◀──</div>
-        <div class="c-node">
-          <div class="c-node-icon">🎛</div>
-          <div class="c-node-name">Audio Engine</div>
-          <div class="c-node-sub">studio quality</div>
-        </div>
-        <div class="c-arr">◀──</div>
-        <div class="c-node">
-          <div class="c-node-icon">💾</div>
-          <div class="c-node-name">Sound Packs</div>
-          <div class="c-node-sub">SD card / OTA</div>
-        </div>
+      <div class="cm-step hi">
+        <div class="cm-icon">🔲</div>
+        <div class="cm-text"><div class="cm-name">Resoniq Unit</div><div class="cm-sub">sound processor</div></div>
+      </div>
+      <div class="cm-step">
+        <div class="cm-icon">💾</div>
+        <div class="cm-text"><div class="cm-name">Sound Packs</div><div class="cm-sub">SD card / OTA</div></div>
+      </div>
+      <div class="cm-step">
+        <div class="cm-icon">🎛</div>
+        <div class="cm-text"><div class="cm-name">Audio Engine</div><div class="cm-sub">studio quality</div></div>
+      </div>
+      <div class="cm-step hi">
+        <div class="cm-icon">🔊</div>
+        <div class="cm-text"><div class="cm-name">Your Speakers</div><div class="cm-sub">cabin + exterior</div></div>
       </div>
     </div>
 
