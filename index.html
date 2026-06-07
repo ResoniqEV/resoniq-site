@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Resoniq — Real-time OBD2-driven engine sound synthesis for electric vehicles. Hear your car the way it was meant to sound.">
 <meta property="og:title" content="Resoniq — Active Sound for EVs">
 <meta property="og:description" content="Real engine sounds, synced to your throttle and speed. Built for the Audi e-tron.">
@@ -43,10 +43,11 @@
   /* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    background: rgba(9,9,11,0.88); backdrop-filter: blur(24px) saturate(1.5);
+    background: rgba(9,9,11,0.92); backdrop-filter: blur(24px) saturate(1.5);
     border-bottom: 1px solid var(--bd);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 clamp(20px,5vw,60px); height: 62px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: env(safe-area-inset-top) clamp(20px,5vw,60px) 0;
+    height: calc(62px + env(safe-area-inset-top));
   }
   .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -.03em; color: #fff; text-decoration: none; }
   .nav-logo em { color: var(--rd); font-style: normal; }
@@ -66,7 +67,7 @@
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
     position: relative; overflow: hidden;
-    padding: 130px clamp(20px,5vw,60px) 80px;
+    padding: calc(130px + env(safe-area-inset-top)) clamp(20px,5vw,60px) 80px;
   }
   .hero-bg {
     position: absolute; inset: 0; z-index: 0;
@@ -648,7 +649,9 @@
       height:auto; background:rgba(9,9,11,.96); backdrop-filter:blur(24px) saturate(1.4);
       border-top:1px solid var(--bd);
       display:flex; justify-content:space-around; align-items:center;
-      padding:8px 0 max(12px, env(safe-area-inset-bottom));
+      padding:10px 0 env(safe-area-inset-bottom);
+      /* min height so tabs are always tappable above home bar */
+      padding-bottom: max(env(safe-area-inset-bottom), 10px);
     }
     .mobile-nav a {
       display:flex; align-items:center; justify-content:center;
@@ -666,7 +669,7 @@
     }
     .mobile-nav a.active { color:var(--tx); }
     .mobile-nav a.active::after { width:18px; }
-    body { padding-bottom:72px; }
+    body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); }
   }
   @media(min-width:641px) { .mobile-nav { display:none; } }
 
