@@ -1268,11 +1268,12 @@
 
   const SIM_PROFILES = {
     // vRPM range is 0–8000 (exact ESP scale — driven by throttle+speed formula)
-    test:  { name:'Test Pack v1', icon:'🎙️', live:true,  color:'#22c55e', maxRPM:8000, useRealSamples:true },
-    v8:    { name:'V8 American',  icon:'🏎️', live:false, color:'#e8293c', maxRPM:7000, idleRPM:720,
-             baseFreq:38, maxFreq:148, wave:'sawtooth', filterBase:280, filterMax:1900, filterQ:3.5 },
-    v10:   { name:'V10 Italia',   icon:'🇮🇹', live:false, color:'#f97316', maxRPM:9000, idleRPM:900,
-             baseFreq:54, maxFreq:260, wave:'sawtooth', filterBase:480, filterMax:4200, filterQ:5 },
+    test:  { name:'Test Pack v1', icon:'🎙️', live:true, color:'#22c55e', maxRPM:8000,
+             useRealSamples:true, folder:'sounds/' },
+    v8:    { name:'V8 American',  icon:'🏎️', live:true, color:'#e8293c', maxRPM:8000,
+             useRealSamples:true, folder:'sounds/p2/' },
+    v10:   { name:'V10 Italia',   icon:'🇮🇹', live:true, color:'#f97316', maxRPM:8000,
+             useRealSamples:true, folder:'sounds/p3/' },
     flat6: { name:'Flat-6',       icon:'🥊', live:false, color:'#a855f7', maxRPM:9200, idleRPM:950,
              baseFreq:48, maxFreq:215, wave:'square',   filterBase:400, filterMax:3400, filterQ:4 },
     f1:    { name:'F1 Hybrid',    icon:'🏁', live:false, color:'#3b82f6', maxRPM:15000, idleRPM:3000,
@@ -1381,10 +1382,14 @@
         return this.ctx.decodeAudioData(await r.arrayBuffer());
       };
 
+      const f = this.profile.folder || 'sounds/';
+      // crackle falls back to default pack if not in this folder
+      const crackleUrl = f === 'sounds/' ? 'sounds/crackle.wav'
+                       : (await fetch(f+'crackle.wav').then(r=>r.ok ? f+'crackle.wav' : 'sounds/crackle.wav').catch(()=>'sounds/crackle.wav'));
       const [idleBuf, engBuf, crackleBuf] = await Promise.all([
-        loadBuf('sounds/idle.wav'),
-        loadBuf('sounds/engine.wav'),
-        loadBuf('sounds/crackle.wav'),
+        loadBuf(f+'idle.wav'),
+        loadBuf(f+'engine.wav'),
+        loadBuf(crackleUrl),
       ]);
 
       // Both layers share one playback rate (ESP uses single sm_rate for both files)
