@@ -1154,7 +1154,7 @@
     <div class="sim-stats">
       <div class="sim-stat">
         <div class="sim-stat-val" id="sim-speed-val">0</div>
-        <div class="sim-stat-lbl">km/h</div>
+        <div class="sim-stat-lbl" id="sim-speed-lbl">mph</div>
       </div>
       <div class="sim-stat">
         <div class="sim-stat-val" id="sim-throttle-val">0%</div>
@@ -1328,15 +1328,24 @@
   let engine = null;
 
   /* ── REAL-SAMPLE ENGINE (Test Pack v1) ── */
+  /*
+   *  Pitch formula matches ESP32 firmware exactly:
+   *    vRPM  = (throttle*0.65 + speed_factor*0.35) * 80   (max ~8000)
+   *    rate  = 0.38 + (vRPM/8000) * (1.58-0.38)           (0.38–1.58)
+   *  Rate & gain smoothing time-constants also matched to firmware.
+   *  Speed sim: 0→60 mph in 4.5 s at full throttle.
+   */
   class SampleEngine {
     constructor(profile) {
-      this.profile = profile;
-      this.rpm = profile.idleRPM;
+      this.profile  = profile;
       this.throttle = 0;
-      this.running = false;
-      this.animId = null;
-      this.prevThrottle = 0;
+      this.speedKph = 0;          // simulated vehicle speed
+      this.smRate   = 0.38;       // smoothed playback rate (matches ESP sm_rate)
+      this.prevTh   = 0;          // previous throttle %
+      this.running  = false;
+      this.animId   = null;
       this.crackleTimeout = null;
+      this.lastTS   = null;
     }
 
     async load() {
@@ -1345,78 +1354,114 @@
       this.masterGain.gain.value = document.getElementById('sim-vol').value / 100 * 0.8;
       this.masterGain.connect(this.ctx.destination);
 
-      // Load idle + engine + crackle
-      const load = async (url) => {
-        const r = await fetch(url);
+      const loadBuf = async url => {
+        const r  = await fetch(url);
         const ab = await r.arrayBuffer();
         return this.ctx.decodeAudioData(ab);
       };
-      const [idleBuf, engBuf, crackleBuf, burbleBuf] = await Promise.all([
-        load('sounds/idle.wav'), load('sounds/engine.wav'),
-        load('sounds/crackle.wav'), load('sounds/burble.wav')
+
+      const [idleBuf, engBuf, crackleBuf] = await Promise.all([
+        loadBuf('sounds/idle.wav'),
+        loadBuf('sounds/engine.wav'),
+        loadBuf('sounds/crackle.wav'),
       ]);
 
-      // Idle layer
+      // ── Idle layer (plays at idle rate, fades out on throttle) ──
       this.idleSrc = this.ctx.createBufferSource();
-      this.idleSrc.buffer = idleBuf; this.idleSrc.loop = true;
-      this.idleGain = this.ctx.createGain(); this.idleGain.gain.value = 1;
-      this.idleSrc.connect(this.idleGain); this.idleGain.connect(this.masterGain);
+      this.idleSrc.buffer = idleBuf;
+      this.idleSrc.loop   = true;
+      this.idleSrc.playbackRate.value = 0.38;
+      this.idleG = this.ctx.createGain();
+      this.idleG.gain.value = 0;
+      this.idleSrc.connect(this.idleG);
+      this.idleG.connect(this.masterGain);
 
-      // Engine layer
+      // ── Engine layer (fades in on throttle, same pitch as idle layer) ──
       this.engSrc = this.ctx.createBufferSource();
-      this.engSrc.buffer = engBuf; this.engSrc.loop = true;
-      this.engGain = this.ctx.createGain(); this.engGain.gain.value = 0;
-      this.engSrc.connect(this.engGain); this.engGain.connect(this.masterGain);
+      this.engSrc.buffer = engBuf;
+      this.engSrc.loop   = true;
+      this.engSrc.playbackRate.value = 0.38;
+      this.engG = this.ctx.createGain();
+      this.engG.gain.value = 0;
+      this.engSrc.connect(this.engG);
+      this.engG.connect(this.masterGain);
 
-      // Crackle buffer (triggered, not looped)
       this.crackleBuf = crackleBuf;
-      this.burbleBuf  = burbleBuf;
 
-      this.idleSrc.start(); this.engSrc.start();
+      // Start both layers; idle fades in
+      this.idleSrc.start();
+      this.engSrc.start();
+      // Fade idle in immediately (τ = 300 ms)
+      this.idleG.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.30);
+
       this.running = true;
-
-      // Show RPM display
       document.getElementById('gauge-loading').style.display = 'none';
-      document.getElementById('sim-rpm-val').style.display = 'block';
+      document.getElementById('sim-rpm-val').style.display   = 'block';
+      this.lastTS = performance.now();
       this._loop();
     }
 
     _loop() {
       if(!this.running) return;
+
+      const now = performance.now();
+      const dt  = Math.min((now - this.lastTS) / 1000, 0.05); // sec, capped
+      this.lastTS = now;
+      const t   = this.ctx.currentTime;
+      const th  = this.throttle; // 0–100
+
+      // ── Speed simulation: 0→60 mph (96.5 kph) in 4.5 s at 100% throttle ──
+      const ACCEL = 96.5 / 4.5;          // kph/s at 100 % throttle
+      const targetSpd = (th / 100) * 260; // top speed proportional to throttle
+      if(targetSpd > this.speedKph) {
+        this.speedKph = Math.min(this.speedKph + ACCEL * (th/100) * dt, targetSpd);
+      } else {
+        // Decelerate 1.8× faster than accelerate
+        this.speedKph = Math.max(this.speedKph - ACCEL * 1.8 * dt, targetSpd);
+      }
+
+      // ── Virtual RPM — exact ESP formula ──
+      // cfg_throttle_weight=0.65, cfg_speed_weight=0.35
+      // sn = clamp(speed_kph/100, 0,1)*100
+      const sn   = Math.min(this.speedKph / 100, 1) * 100;
+      const vRPM = (th * 0.65 + sn * 0.35) * 80;          // 0–8000
+
+      // ── Playback rate — exact ESP formula ──
+      // rate = cfg_rate_min + (vRPM/8000)*(cfg_rate_max - cfg_rate_min)
+      // cfg_rate_min=0.38, cfg_rate_max=1.58
+      const targetRate = 0.38 + (Math.min(vRPM, 8000) / 8000) * (1.58 - 0.38);
+
+      // Smooth rate: ESP sm_rate α=0.035 per 11.6 ms audio chunk → τ ≈ 325 ms
+      // Both layers pitch-shift together (same as ESP, one shared sm_rate)
+      this.idleSrc.playbackRate.setTargetAtTime(targetRate, t, 0.325);
+      this.engSrc.playbackRate.setTargetAtTime(targetRate,  t, 0.325);
+
+      // ── Gain crossfade — matches ESP binary idle/engine switch ──
+      // ESP: idle when throttle=0, engine when throttle>0; τ ≈ 284 ms
+      // cfg_vol_idle=0.40 (mapped to 0.55 for web), cfg_vol_engine=0.60 (→ 0.75)
+      const wantsIdle    = th <= 0;
+      const idleTarget   = wantsIdle ? 0.55 : 0;
+      const engTarget    = wantsIdle ? 0    : 0.75;
+      this.idleG.gain.setTargetAtTime(idleTarget, t, 0.284);
+      this.engG.gain.setTargetAtTime(engTarget,   t, 0.284);
+
+      // ── Crackle on lift-off (mirrors ESP check_crackle) ──
+      // Fire when throttle was > 20 % and drops below 5 %, at speed > 8 kph
+      if(this.prevTh > 20 && th < 5 && this.speedKph > 8 && !this.crackleTimeout) {
+        this._playOnce(this.crackleBuf, 0.5);
+        this.crackleTimeout = setTimeout(() => this.crackleTimeout = null, 220);
+      }
+      this.prevTh = th;
+
+      // ── UI ──
+      const ratio = Math.min(vRPM / 8000, 1);
       const p = this.profile;
-      const t = this.ctx.currentTime;
-      const th = this.throttle / 100;
+      const displayRPM = Math.round(p.idleRPM + ratio * (p.maxRPM - p.idleRPM));
+      document.getElementById('sim-rpm-val').textContent =
+        displayRPM >= 1000 ? (displayRPM/1000).toFixed(1)+'k' : displayRPM;
 
-      // RPM tracking
-      const targetRpm = p.idleRPM + (p.maxRPM - p.idleRPM) * th * 0.94;
-      const inertia = th > 0 ? 0.07 : 0.042;
-      this.rpm += (targetRpm - this.rpm) * inertia;
-      const ratio = Math.max(0,(this.rpm - p.idleRPM)/(p.maxRPM - p.idleRPM));
-
-      // Crossfade idle → engine
-      const idleGain = Math.max(0, 1 - th * 3);
-      const engGain  = Math.min(1, th * 2);
-      this.idleGain.gain.setTargetAtTime(idleGain, t, 0.06);
-      this.engGain.gain.setTargetAtTime(engGain,  t, 0.06);
-
-      // Pitch via playback rate
-      const [ir0,ir1] = p.idleRate, [er0,er1] = p.engRate;
-      this.idleSrc.playbackRate.setTargetAtTime(ir0 + th*(ir1-ir0), t, 0.06);
-      this.engSrc.playbackRate.setTargetAtTime(er0 + ratio*(er1-er0), t, 0.05);
-
-      // Crackle on lift-off from high throttle
-      if(this.prevThrottle > 65 && th < 0.15 && !this.crackleTimeout) {
-        this._playOnce(this.crackleBuf, 0.45);
-        this.crackleTimeout = setTimeout(() => this.crackleTimeout=null, 1200);
-      }
-      // Burble on moderate deceleration
-      if(this.prevThrottle > 35 && th < 0.08 && !this.crackleTimeout) {
-        this._playOnce(this.burbleBuf, 0.3);
-        this.crackleTimeout = setTimeout(() => this.crackleTimeout=null, 800);
-      }
-      this.prevThrottle = th * 100;
-
-      this._updateUI(ratio);
+      updateGaugeArc(ratio);
+      this._updateStats(ratio);
       this.animId = requestAnimationFrame(() => this._loop());
     }
 
@@ -1424,21 +1469,17 @@
       if(!buffer || !this.ctx) return;
       const src = this.ctx.createBufferSource();
       const g   = this.ctx.createGain();
-      src.buffer = buffer;
+      src.buffer  = buffer;
       g.gain.value = vol;
       src.connect(g); g.connect(this.masterGain);
       src.start();
     }
 
-    _updateUI(ratio) {
-      const rpm = Math.round(this.rpm);
-      document.getElementById('sim-rpm-val').textContent = rpm >= 1000 ? (rpm/1000).toFixed(1)+'k' : rpm;
-      this._updateStats(ratio);
-      updateGaugeArc(ratio);
+    setThrottle(v) { this.throttle = Math.max(0, Math.min(100, v)); }
+    setVolume(v)   {
+      if(this.masterGain)
+        this.masterGain.gain.setTargetAtTime(v/100*0.8, this.ctx.currentTime, 0.1);
     }
-
-    setThrottle(v) { this.throttle = Math.max(0,Math.min(100,v)); }
-    setVolume(v)   { if(this.masterGain) this.masterGain.gain.setTargetAtTime(v/100*0.8, this.ctx.currentTime, 0.1); }
 
     stop() {
       this.running = false;
@@ -1519,12 +1560,29 @@
     }
   }
 
-  // Shared UI update (used by both engines)
-  SampleEngine.prototype._updateStats = SynthEngine.prototype._updateStats = function(ratio) {
-    document.getElementById('sim-speed-val').textContent = Math.round(ratio*260);
+  // Shared UI update (synth engine uses ratio-based speed estimate)
+  SynthEngine.prototype._updateStats = function(ratio) {
+    document.getElementById('sim-speed-val').textContent = Math.round(ratio * 162); // km/h
     document.getElementById('sim-throttle-val').textContent = Math.round(this.throttle)+'%';
     const gears=['N','1st','2nd','3rd','4th','5th','6th','7th','8th'];
     document.getElementById('sim-gear-val').textContent = gears[Math.min(Math.ceil(ratio*8),8)];
+    const bars=document.querySelectorAll('.viz-bar'), now=Date.now();
+    bars.forEach((b,i)=>{
+      const h=ratio<0.02?4:(Math.abs(Math.sin(now/60+i*0.9))*0.5+0.5)*ratio*48+4;
+      b.style.height=h+'px'; b.style.opacity=0.4+ratio*0.6;
+    });
+  };
+
+  // SampleEngine uses real simulated speed (in mph, matching "0-60 in 4.5s" feel)
+  SampleEngine.prototype._updateStats = function(ratio) {
+    const speedMph = Math.round(this.speedKph * 0.621371);
+    document.getElementById('sim-speed-val').textContent = speedMph;
+    document.getElementById('sim-throttle-val').textContent = Math.round(this.throttle)+'%';
+    const gears=['N','1st','2nd','3rd','4th','5th'];
+    // gear based on mph bands matching e-tron's transmission
+    const g = speedMph < 8 ? 0 : speedMph < 22 ? 1 : speedMph < 38 ? 2 :
+              speedMph < 55 ? 3 : speedMph < 75 ? 4 : 5;
+    document.getElementById('sim-gear-val').textContent = gears[g];
     const bars=document.querySelectorAll('.viz-bar'), now=Date.now();
     bars.forEach((b,i)=>{
       const h=ratio<0.02?4:(Math.abs(Math.sin(now/60+i*0.9))*0.5+0.5)*ratio*48+4;
@@ -1546,6 +1604,7 @@
     document.getElementById('sim-rpm-val').style.display = 'none';
     document.getElementById('gauge-loading').style.display = 'block';
     document.getElementById('gauge-loading').textContent = p.live ? 'Loading…' : 'Starting…';
+    document.getElementById('sim-speed-lbl').textContent = p.useRealSamples ? 'mph' : 'km/h';
     document.getElementById('sim-speed-val').textContent='0';
     document.getElementById('sim-throttle-val').textContent='0%';
     document.getElementById('sim-gear-val').textContent='N';
