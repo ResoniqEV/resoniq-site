@@ -197,25 +197,47 @@
   .p-profile-name { font-size:11px; font-weight:700; color:var(--tx2); }
   .p-profile-sub  { font-size:9px; color:var(--mu); }
 
-  /* ── SIGNAL CHAIN ── */
+  /* ── SIGNAL CHAIN (SNAKE) ── */
   .chain {
     background:var(--bg2); border:1px solid var(--bd); border-radius:20px;
-    padding: 36px; margin-bottom: 24px;
+    padding:32px; margin-bottom:24px; overflow:hidden;
   }
-  .chain-row {
-    display:flex; align-items:center; justify-content:center;
-    gap:0; flex-wrap:wrap; row-gap:18px;
-  }
+  .chain-snake { display:flex; flex-direction:column; gap:0; }
+  .cs-row { display:flex; align-items:center; }
+  .cs-row-1 { justify-content:flex-start; }
+  .cs-row-2 { justify-content:flex-start; }
   .c-node {
     background:var(--bg3); border:1px solid var(--bd2); border-radius:12px;
-    padding:14px 18px; text-align:center; min-width:100px;
+    padding:14px 16px; text-align:center; flex:1;
   }
   .c-node.hi { border-color:rgba(232,41,60,.5); background:var(--rd4); }
-  .c-node-icon { font-size:20px; margin-bottom:5px; }
+  .c-node-icon { font-size:18px; margin-bottom:5px; }
   .c-node-name { font-size:11px; font-weight:700; color:var(--tx2); }
   .c-node-sub  { font-size:9px; color:var(--mu); margin-top:2px; font-family:var(--mo); }
-  .c-arr { color:var(--bd2); font-size:16px; padding:0 6px; flex-shrink:0; }
+  .c-arr { color:var(--bd2); font-size:14px; padding:0 6px; flex-shrink:0; white-space:nowrap; }
   .c-arr.r { color:var(--rd); }
+  /* Corner turn between row 1 and row 2 */
+  .cs-corner-wrap {
+    display:flex; justify-content:flex-end; padding-right:0;
+    position:relative; height:28px;
+  }
+  .cs-corner {
+    position:absolute; right:0;
+    width:calc(33.33% + 0px);
+    height:28px;
+    border-right:2px solid var(--rd);
+    border-bottom:2px solid var(--rd);
+    border-radius:0 0 10px 0;
+  }
+  .cs-corner-top {
+    position:absolute; left:0;
+    width:calc(33.33% + 0px);
+    height:28px;
+    border-left:2px solid var(--rd);
+    border-top:2px solid var(--rd);
+    border-radius:10px 0 0 0;
+    top:0;
+  }
 
   /* ── STATUS LIST ── */
   .slist { display:flex; flex-direction:column; gap:10px; }
@@ -623,14 +645,21 @@
       padding:8px 0 max(12px, env(safe-area-inset-bottom));
     }
     .mobile-nav a {
-      display:flex; flex-direction:column; align-items:center; gap:3px;
-      color:var(--mu); text-decoration:none; font-size:9px; font-weight:700;
-      letter-spacing:.05em; text-transform:uppercase; padding:4px 10px;
-      transition:color .2s, transform .2s;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--mu); text-decoration:none; padding:6px 8px;
+      transition:color .2s;
+      position:relative;
     }
-    .mobile-nav a .mnav-icon { font-size:20px; transition:transform .25s cubic-bezier(.22,1,.36,1); }
-    .mobile-nav a.active { color:var(--rd); }
-    .mobile-nav a.active .mnav-icon { transform:scale(1.18) translateY(-2px); }
+    .mobile-nav a .mnav-label {
+      font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    }
+    .mobile-nav a::after {
+      content:''; position:absolute; bottom:-2px; left:50%; transform:translateX(-50%);
+      width:0; height:2px; background:var(--rd); border-radius:2px;
+      transition:width .25s cubic-bezier(.22,1,.36,1);
+    }
+    .mobile-nav a.active { color:var(--tx); }
+    .mobile-nav a.active::after { width:18px; }
     body { padding-bottom:72px; }
   }
   @media(min-width:641px) { .mobile-nav { display:none; } }
@@ -829,45 +858,57 @@
   <h2>OBD2 in. Engine sound out.</h2>
   <p class="lead">Resoniq reads your throttle position and speed in real time via your car's OBD2 port, then generates the perfect engine sound layer to match.</p>
 
-  <div class="chain">
-    <div class="chain-row">
-      <div class="c-node hi">
-        <div class="c-node-icon">🚗</div>
-        <div class="c-node-name">Your EV</div>
-        <div class="c-node-sub">OBD2 port</div>
+  <div class="chain fade">
+    <div class="chain-snake">
+      <!-- Row 1: left → right -->
+      <div class="cs-row cs-row-1">
+        <div class="c-node hi">
+          <div class="c-node-icon">🚗</div>
+          <div class="c-node-name">Your EV</div>
+          <div class="c-node-sub">OBD2 port</div>
+        </div>
+        <div class="c-arr r">──▶</div>
+        <div class="c-node">
+          <div class="c-node-icon">📡</div>
+          <div class="c-node-name">BLE Dongle</div>
+          <div class="c-node-sub">plug-in, wireless</div>
+        </div>
+        <div class="c-arr">──▶</div>
+        <div class="c-node hi">
+          <div class="c-node-icon">🔲</div>
+          <div class="c-node-name">Resoniq Unit</div>
+          <div class="c-node-sub">sound processor</div>
+        </div>
       </div>
-      <div class="c-arr r">──▶</div>
-      <div class="c-node">
-        <div class="c-node-icon">📡</div>
-        <div class="c-node-name">BLE Dongle</div>
-        <div class="c-node-sub">plug-in, wireless</div>
+      <!-- Corner turn: down on right, up on left -->
+      <div class="cs-corner-wrap">
+        <div class="cs-corner"></div>
       </div>
-      <div class="c-arr">──▶</div>
-      <div class="c-node hi">
-        <div class="c-node-icon">🔲</div>
-        <div class="c-node-name">Resoniq Unit</div>
-        <div class="c-node-sub">sound processor</div>
+      <div style="height:0;position:relative;">
+        <div class="cs-corner-top"></div>
       </div>
-      <div class="c-arr">──▶</div>
-      <div class="c-node">
-        <div class="c-node-icon">💾</div>
-        <div class="c-node-name">Sound Packs</div>
-        <div class="c-node-sub">SD card / OTA</div>
-      </div>
-      <div class="c-arr">──▶</div>
-      <div class="c-node">
-        <div class="c-node-icon">🎛️</div>
-        <div class="c-node-name">Audio Engine</div>
-        <div class="c-node-sub">studio quality</div>
-      </div>
-      <div class="c-arr r">──▶</div>
-      <div class="c-node hi">
-        <div class="c-node-icon">🔊</div>
-        <div class="c-node-name">Your Speakers</div>
-        <div class="c-node-sub">cabin + exterior</div>
+      <!-- Row 2: right ← left (snake continues from Resoniq Unit down into Sound Packs) -->
+      <div class="cs-row cs-row-2">
+        <div class="c-node hi">
+          <div class="c-node-icon">🔊</div>
+          <div class="c-node-name">Your Speakers</div>
+          <div class="c-node-sub">cabin + exterior</div>
+        </div>
+        <div class="c-arr r">◀──</div>
+        <div class="c-node">
+          <div class="c-node-icon">🎛</div>
+          <div class="c-node-name">Audio Engine</div>
+          <div class="c-node-sub">studio quality</div>
+        </div>
+        <div class="c-arr">◀──</div>
+        <div class="c-node">
+          <div class="c-node-icon">💾</div>
+          <div class="c-node-name">Sound Packs</div>
+          <div class="c-node-sub">SD card / OTA</div>
+        </div>
       </div>
     </div>
-    <div style="margin-top:28px;text-align:center;font-size:12px;color:var(--mu);">
+    <div style="margin-top:24px;text-align:center;font-size:12px;color:var(--mu);">
       Control everything from your phone → connect to <code style="color:var(--tx3)">etron-sound</code> WiFi → open the app
     </div>
   </div>
@@ -905,12 +946,10 @@
       <div class="si"><div class="sdot sd-live"></div><div class="sname">Virtual RPM Engine</div><div class="sval">throttle 65% + speed 35%</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">Rev Hang on Lift-Off</div><div class="sval">0.40s natural decay</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">Startup Sound</div><div class="sval">plays on ignition</div></div>
-      <div class="si"><div class="sdot sd-live"></div><div class="sname">Backfire / Crackle</div><div class="sval">throttle-off at speed</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">PWA Web App</div><div class="sval">iPhone dock, full-screen</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">Sound Profile Switching</div><div class="sval">live, no reboot</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">EQ (Bass + Treble)</div><div class="sval">±6 dB per band</div></div>
       <div class="si"><div class="sdot sd-live"></div><div class="sname">OTA Sound Pack Upload</div><div class="sval">WAV via browser</div></div>
-      <div class="si"><div class="sdot sd-live"></div><div class="sname">MPH / KPH Display Toggle</div><div class="sval">settings toggle</div></div>
       <div class="si"><div class="sdot sd-coming"></div><div class="sname">More Sound Packs</div><div class="sval">V8, V10, Flat-6, F1 — in production</div></div>
       <div class="si"><div class="sdot sd-coming"></div><div class="sname">Fuse Tap (Permanent Power)</div><div class="sval">ACC fuse, installing soon</div></div>
       <div class="si"><div class="sdot sd-future"></div><div class="sname">Exterior / Rear Speaker</div><div class="sval">Phase 3 hardware</div></div>
@@ -1465,12 +1504,12 @@
   const mNav = document.createElement('nav');
   mNav.className = 'mobile-nav';
   mNav.innerHTML = [
-    ['#how',      '⚡', 'How'],
-    ['#sound',    '🎵', 'Sound'],
-    ['#roadmap',  '🗺', 'Road'],
-    ['#pricing',  '💳', 'Price'],
-    ['#waitlist', '🔔', 'Access'],
-  ].map(([h,i,l]) => `<a href="${h}"><span class="mnav-icon">${i}</span>${l}</a>`).join('');
+    ['#how',      'How'],
+    ['#sound',    'Sound'],
+    ['#roadmap',  'Road'],
+    ['#pricing',  'Price'],
+    ['#waitlist', 'Join'],
+  ].map(([h,l]) => `<a href="${h}"><span class="mnav-label">${l}</span></a>`).join('');
   document.body.appendChild(mNav);
   const mNavLinks = mNav.querySelectorAll('a');
   window.addEventListener('scroll', () => {
