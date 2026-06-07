@@ -454,11 +454,7 @@
     border-radius:18px; padding:28px; position:relative; overflow:hidden;
   }
   .price-card.feat { border-color:rgba(232,41,60,.5); }
-  .price-card.feat::before {
-    content:'MOST POPULAR'; position:absolute; top:16px; right:-20px;
-    background:var(--rd); color:#fff; font-size:8px; font-weight:800;
-    letter-spacing:.1em; padding:3px 28px; transform:rotate(35deg);
-  }
+  .price-card.feat::before { display:none; }
   .price-name  { font-size:12px; font-weight:700; color:var(--rd); text-transform:uppercase; letter-spacing:.08em; }
   .price-val   { font-size:38px; font-weight:800; color:#fff; letter-spacing:-.03em; margin:10px 0 4px; }
   .price-val span { font-size:15px; font-weight:400; color:var(--mu); }
@@ -513,9 +509,137 @@
   .foot-links a:hover { color:var(--tx); }
   .foot-copy { font-size:12px; color:var(--mu); }
 
+  /* ── SCROLL PROGRESS ── */
+  .scroll-progress {
+    position:fixed; top:0; left:0; height:2px; z-index:10000;
+    background:linear-gradient(90deg,var(--rd),#ff6b7a);
+    width:0%; pointer-events:none;
+    box-shadow:0 0 10px rgba(232,41,60,.7), 0 0 20px rgba(232,41,60,.3);
+    transition:width .08s linear;
+  }
+
+  /* ── HERO ENTRANCE ── */
+  .hero-pill    { animation: heroIn .65s cubic-bezier(.22,1,.36,1) .05s both; }
+  .hero-content h1 { animation: heroIn .8s  cubic-bezier(.22,1,.36,1) .18s both; }
+  .hero-tagline { animation: heroIn .7s  cubic-bezier(.22,1,.36,1) .35s both; }
+  .hero-actions { animation: heroIn .7s  cubic-bezier(.22,1,.36,1) .5s  both; }
+  .hero-stats   { animation: heroIn .7s  cubic-bezier(.22,1,.36,1) .65s both; }
+  .hero-car-wrap{ animation: heroIn .9s  cubic-bezier(.22,1,.36,1) .8s  both; }
+  @keyframes heroIn {
+    from { opacity:0; transform: translateY(32px); }
+    to   { opacity:1; transform: none; }
+  }
+
   /* ── ANIM ── */
-  .fade { opacity:0; transform:translateY(18px); transition:opacity .5s ease, transform .5s ease; }
+  .fade { opacity:0; transform:translateY(28px) scale(0.985); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
   .fade.in { opacity:1; transform:none; }
+  .fade[data-d="1"] { transition-delay:.08s; }
+  .fade[data-d="2"] { transition-delay:.18s; }
+  .fade[data-d="3"] { transition-delay:.28s; }
+  .fade[data-d="4"] { transition-delay:.4s; }
+  .fade[data-d="5"] { transition-delay:.52s; }
+
+  /* ── SLIDE VARIANTS ── */
+  .slide-l { opacity:0; transform:translateX(-36px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .slide-r { opacity:0; transform:translateX(36px);  transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .slide-l.in, .slide-r.in { opacity:1; transform:none; }
+
+  /* ── STAGGER CHILDREN ── */
+  .stagger > * {
+    opacity:0; transform:translateY(22px);
+    transition:opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+  }
+  .stagger.in > *:nth-child(1) { opacity:1; transform:none; transition-delay:.0s; }
+  .stagger.in > *:nth-child(2) { opacity:1; transform:none; transition-delay:.1s; }
+  .stagger.in > *:nth-child(3) { opacity:1; transform:none; transition-delay:.2s; }
+  .stagger.in > *:nth-child(4) { opacity:1; transform:none; transition-delay:.3s; }
+  .stagger.in > *:nth-child(5) { opacity:1; transform:none; transition-delay:.4s; }
+  .stagger.in > *:nth-child(n+6) { opacity:1; transform:none; transition-delay:.5s; }
+
+  /* ── CARD ENHANCED HOVER ── */
+  .card { transition:border-color .25s, transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s; }
+  .card:hover { border-color:var(--bd2); transform:translateY(-5px) scale(1.006); box-shadow:0 24px 64px rgba(0,0,0,.4), 0 0 0 1px var(--bd2); }
+  .card.red-top:hover { box-shadow:0 20px 60px rgba(232,41,60,.13), 0 0 0 1px rgba(232,41,60,.4); }
+
+  /* ── PROF CARD HOVER ── */
+  .prof { transition:all .3s cubic-bezier(.22,1,.36,1); }
+  .prof:hover { transform:translateY(-6px) scale(1.04); }
+  .prof.live-prof:hover { box-shadow:0 14px 44px rgba(232,41,60,.22); }
+
+  /* ── PRICE CARD HOVER ── */
+  .price-card { transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s, border-color .25s; }
+  .price-card:hover { transform:translateY(-6px); box-shadow:0 28px 64px rgba(0,0,0,.45); }
+  .price-card.feat:hover { box-shadow:0 28px 64px rgba(232,41,60,.18); }
+
+  /* ── RIPPLE ── */
+  .btn, .wl-btn { position:relative; overflow:hidden; }
+  .ripple {
+    position:absolute; border-radius:50%; background:rgba(255,255,255,.18);
+    transform:scale(0); animation:rippleA .55s ease-out forwards; pointer-events:none;
+  }
+  @keyframes rippleA { to { transform:scale(4); opacity:0; } }
+
+  /* ── HERO BG BREATHE ── */
+  .hero-bg { animation:heroBreathe 9s ease-in-out infinite alternate; }
+  @keyframes heroBreathe {
+    0%   { opacity:1; transform:scale(1); }
+    100% { opacity:.65; transform:scale(1.06); }
+  }
+
+  /* ── PARTICLES CANVAS ── */
+  #hero-particles { position:absolute; inset:0; z-index:0; pointer-events:none; }
+
+  /* ── GRAIN OVERLAY ── */
+  body::after {
+    content:''; position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.022; pointer-events:none; z-index:9997;
+  }
+
+  /* ── RED TEXT SHIMMER ── */
+  h1 em {
+    background:linear-gradient(90deg, var(--rd) 0%, #ff7b87 50%, var(--rd) 100%);
+    background-size:200% auto;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    animation:shimmerTxt 4s linear infinite;
+  }
+  @keyframes shimmerTxt { to { background-position:200% center; } }
+
+  /* ── RM DOT LIVE PULSE ── */
+  .rm-dot.g { animation:rmPulse 2.8s ease-in-out infinite; }
+  @keyframes rmPulse {
+    0%,100% { box-shadow:0 0 12px rgba(34,197,94,.2); }
+    50%      { box-shadow:0 0 32px rgba(34,197,94,.55), 0 0 0 6px rgba(34,197,94,.06); }
+  }
+
+  /* ── MOBILE BOTTOM NAV ── */
+  @media(max-width:640px) {
+    .mobile-nav {
+      position:fixed; top:auto !important; bottom:0; left:0; right:0; z-index:998;
+      height:auto; background:rgba(9,9,11,.96); backdrop-filter:blur(24px) saturate(1.4);
+      border-top:1px solid var(--bd);
+      display:flex; justify-content:space-around; align-items:center;
+      padding:8px 0 max(12px, env(safe-area-inset-bottom));
+    }
+    .mobile-nav a {
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      color:var(--mu); text-decoration:none; font-size:9px; font-weight:700;
+      letter-spacing:.05em; text-transform:uppercase; padding:4px 10px;
+      transition:color .2s, transform .2s;
+    }
+    .mobile-nav a .mnav-icon { font-size:20px; transition:transform .25s cubic-bezier(.22,1,.36,1); }
+    .mobile-nav a.active { color:var(--rd); }
+    .mobile-nav a.active .mnav-icon { transform:scale(1.18) translateY(-2px); }
+    body { padding-bottom:72px; }
+  }
+  @media(min-width:641px) { .mobile-nav { display:none; } }
+
+  /* ── MOBILE TAP FEEDBACK ── */
+  @media(max-width:640px) {
+    .card:active  { transform:scale(0.97) translateY(-1px); transition:transform .1s; }
+    .prof:active  { transform:scale(0.93); transition:transform .1s; }
+  }
 
   /* ── HIGHLIGHT ── */
   .hl {
@@ -542,6 +666,7 @@
 
 <!-- ═══════════ HERO ═══════════ -->
 <div class="hero">
+  <canvas id="hero-particles"></canvas>
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
@@ -554,15 +679,15 @@
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-val">75<em>ms</em></div>
+        <div class="hero-stat-val"><span class="count-up" data-count="75" data-suffix="ms">75ms</span></div>
         <div class="hero-stat-lbl">Throttle Sync</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">44<em>kHz</em></div>
+        <div class="hero-stat-val"><span class="count-up" data-count="44" data-suffix="kHz">44kHz</span></div>
         <div class="hero-stat-lbl">Audio Quality</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">5<em>+</em></div>
+        <div class="hero-stat-val"><span class="count-up" data-count="5" data-suffix="+">5+</span></div>
         <div class="hero-stat-lbl">Sound Profiles</div>
       </div>
       <div class="hero-stat">
@@ -572,7 +697,7 @@
     </div>
 
     <!-- Hero — real car photo with annotation overlay -->
-    <div style="margin-top:48px;width:100%;max-width:960px;border-radius:20px;overflow:hidden;border:1px solid rgba(94,184,255,0.16);box-shadow:0 0 80px rgba(232,41,60,0.1),0 0 140px rgba(59,130,246,0.06);position:relative;aspect-ratio:16/7;background:#09090b;">
+    <div class="hero-car-wrap" style="margin-top:48px;width:100%;max-width:960px;border-radius:20px;overflow:hidden;border:1px solid rgba(94,184,255,0.16);box-shadow:0 0 80px rgba(232,41,60,0.1),0 0 140px rgba(59,130,246,0.06);position:relative;aspect-ratio:16/7;background:#09090b;">
       <!-- Real car photo — desaturated + blue-tinted for X-ray effect -->
       <img src="car.jpg"
            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 58%;
@@ -747,18 +872,18 @@
     </div>
   </div>
 
-  <div class="g3">
-    <div class="card fade">
+  <div class="g3 stagger">
+    <div class="card red-top">
       <div class="card-icon">⚡</div>
       <h3>Plug In. Done.</h3>
       <p>The OBD2 Bluetooth dongle takes 10 seconds to install. No wiring, no cutting, no coding. The Resoniq unit mounts in your trunk.</p>
     </div>
-    <div class="card fade">
+    <div class="card red-top">
       <div class="card-icon">🧠</div>
       <h3>Throttle-Accurate</h3>
       <p>Throttle position updates every 75ms. The virtual RPM engine blends pedal pressure and vehicle speed to create a natural, responsive rev feel.</p>
     </div>
-    <div class="card fade">
+    <div class="card red-top">
       <div class="card-icon">📱</div>
       <h3>Full App Control</h3>
       <p>PWA web app — no install required. Switch sound profiles, adjust volumes, tweak EQ, and upload new packs over the air from your iPhone.</p>
@@ -1005,7 +1130,7 @@
   <p class="lead">Four phases from a working daily-driver prototype to a commercial kit any EV owner can buy.</p>
 
   <div class="rm">
-    <div class="rm-row fade">
+    <div class="rm-row fade slide-l">
       <div class="rm-dot g">✅</div>
       <div class="rm-body">
         <div class="rm-label g">Phase 1 — Complete</div>
@@ -1023,7 +1148,7 @@
         </div>
       </div>
     </div>
-    <div class="rm-row fade">
+    <div class="rm-row fade slide-r">
       <div class="rm-dot y">🔧</div>
       <div class="rm-body">
         <div class="rm-label y">Phase 2 — In Progress (Weeks)</div>
@@ -1041,7 +1166,7 @@
         </div>
       </div>
     </div>
-    <div class="rm-row fade">
+    <div class="rm-row fade slide-l">
       <div class="rm-dot b">🚀</div>
       <div class="rm-body">
         <div class="rm-label b">Phase 3 — Hardware v2 (2–4 Months)</div>
@@ -1058,7 +1183,7 @@
         </div>
       </div>
     </div>
-    <div class="rm-row fade">
+    <div class="rm-row fade slide-r">
       <div class="rm-dot p">💡</div>
       <div class="rm-body">
         <div class="rm-label p">Phase 4 — Commercial Kit (6–12 Months)</div>
@@ -1236,13 +1361,61 @@
 </div>
 
 <script>
-  // Scroll fade-in
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+  // ── SCROLL PROGRESS BAR ──
+  const progressBar = document.createElement('div');
+  progressBar.className = 'scroll-progress';
+  document.body.prepend(progressBar);
+  window.addEventListener('scroll', () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (window.scrollY / max * 100) + '%';
+  }, { passive: true });
 
-  // Nav active highlight
+  // ── PARTICLE CANVAS ──
+  (function() {
+    const canvas = document.getElementById('hero-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    const pts = Array.from({length: 55}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + 0.4,
+      dx: (Math.random() - 0.5) * 0.22,
+      dy: -Math.random() * 0.35 - 0.08,
+      o: Math.random() * 0.35 + 0.08,
+    }));
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232,41,60,${p.o})`;
+        ctx.fill();
+        p.x += p.dx; p.y += p.dy;
+        if (p.y < -4) { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ── INTERSECTION OBSERVER (fade + slide + stagger) ──
+  const ioOpts = { threshold: 0.08, rootMargin: '0px 0px -40px 0px' };
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        obs.unobserve(e.target);
+      }
+    });
+  }, ioOpts);
+  document.querySelectorAll('.fade, .slide-l, .slide-r, .stagger').forEach(el => obs.observe(el));
+
+  // ── NAV ACTIVE HIGHLIGHT ──
   const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
   window.addEventListener('scroll', () => {
     let current = '';
@@ -1252,7 +1425,62 @@
     navLinks.forEach(a => {
       a.style.color = a.getAttribute('href') === '#'+current ? '#fff' : '';
     });
+  }, { passive: true });
+
+  // ── RIPPLE EFFECT ──
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn, .wl-btn, .sim-power-btn');
+    if (!btn || btn.disabled) return;
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+    btn.appendChild(r);
+    r.addEventListener('animationend', () => r.remove());
   });
+
+  // ── COUNT-UP ANIMATION ──
+  const countObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseFloat(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      const dur = 1600;
+      const start = performance.now();
+      const update = now => {
+        const p = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * ease) + suffix;
+        if (p < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+      countObs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.count-up').forEach(el => countObs.observe(el));
+
+  // ── MOBILE BOTTOM NAV ──
+  const mNav = document.createElement('nav');
+  mNav.className = 'mobile-nav';
+  mNav.innerHTML = [
+    ['#how',      '⚡', 'How'],
+    ['#sound',    '🎵', 'Sound'],
+    ['#roadmap',  '🗺', 'Road'],
+    ['#pricing',  '💳', 'Price'],
+    ['#waitlist', '🔔', 'Access'],
+  ].map(([h,i,l]) => `<a href="${h}"><span class="mnav-icon">${i}</span>${l}</a>`).join('');
+  document.body.appendChild(mNav);
+  const mNavLinks = mNav.querySelectorAll('a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    ['how','sound','roadmap','pricing','waitlist'].forEach(id => {
+      const s = document.getElementById(id);
+      if (s && window.scrollY >= s.offsetTop - 150) cur = id;
+    });
+    mNavLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+  }, { passive: true });
 
   // Waitlist form
   async function submitWaitlist(e) {
