@@ -1607,8 +1607,9 @@
       // per rAF frame (16.7 ms) = 1.44 chunks => alpha_per_frame = 0.050
       this.sm_rate += (target_rate - this.sm_rate) * 0.050;
 
-      // Single shared rate applied to both layers (mirrors ESP one sm_rate)
-      this.idleSrc.playbackRate.value = this.sm_rate;
+      // Idle plays at natural pitch (recorded at real idle speed)
+      // Only engine gets pitch-shifted to follow virtual RPM
+      this.idleSrc.playbackRate.value = 1.0;
       this.engSrc.playbackRate.value  = this.sm_rate;
 
       // IDLE/ENGINE GAIN SWITCH PORT
