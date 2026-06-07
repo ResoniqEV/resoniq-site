@@ -1422,8 +1422,8 @@
 
       // SPEED SIMULATION
       // ESP reads real speed via OBD2 010D. We simulate 0-60 mph (96.5 kph) in 4.5 s.
-      const ACCEL = 96.5 / 4.5; // kph/s at 100% throttle
-      const targetSpd = (th / 100) * 260;
+      const ACCEL = 96.5 / 4.5; // kph/s — keeps 0-60 mph in 4.5 s feel
+      const targetSpd = (th / 100) * 193.1; // 120 mph in kph
       if(targetSpd > this.speedKph)
         this.speedKph = Math.min(this.speedKph + ACCEL * (th/100) * dt, targetSpd);
       else
@@ -1457,8 +1457,8 @@
       // loop() RATE PORT
       // float rate = cfg_rate_min + ((virtual_rpm/8000.0f)*(cfg_rate_max-cfg_rate_min));
       // rate = constrain(rate, cfg_rate_min, cfg_rate_max);
-      let rate = 0.38 + (this.virtual_rpm / 8000.0) * (1.58 - 0.38);
-      rate = Math.max(0.38, Math.min(rate, 1.58));
+      let rate = 0.38 + (this.virtual_rpm / 8000.0) * (1.42 - 0.38); // max pitch lowered to 1.42
+      rate = Math.max(0.38, Math.min(rate, 1.42));
 
       // REV LIMITER PORT
       // bool should_rl = (throttle >= 81) && (speed_kph <= 8);
@@ -1481,8 +1481,8 @@
         this.rl_bounce_offset = 0;
       }
       if(this.rl_amount > 0.01)
-        rate = Math.min(rate, 1.58 * (1.0 - 0.20 * this.rl_amount));
-      const target_rate = Math.max(0.1, Math.min(rate + this.rl_bounce_offset, 1.58));
+        rate = Math.min(rate, 1.42 * (1.0 - 0.20 * this.rl_amount));
+      const target_rate = Math.max(0.1, Math.min(rate + this.rl_bounce_offset, 1.42));
 
       // audio_task() SM_RATE SMOOTHING PORT
       // sm_rate += (rate - sm_rate)*0.035  per 512-sample chunk at 44100 Hz
@@ -1627,7 +1627,7 @@
 
   // Shared UI update (synth engine uses ratio-based speed estimate)
   SynthEngine.prototype._updateStats = function(ratio) {
-    document.getElementById('sim-speed-val').textContent = Math.round(ratio * 162); // km/h
+    document.getElementById('sim-speed-val').textContent = Math.round(ratio * 100); // mph (approx)
     document.getElementById('sim-throttle-val').textContent = Math.round(this.throttle)+'%';
     const gears=['N','1st','2nd','3rd','4th','5th','6th','7th','8th'];
     document.getElementById('sim-gear-val').textContent = gears[Math.min(Math.ceil(ratio*8),8)];
@@ -1643,10 +1643,10 @@
     const speedMph = Math.round(this.speedKph * 0.621371);
     document.getElementById('sim-speed-val').textContent = speedMph;
     document.getElementById('sim-throttle-val').textContent = Math.round(this.throttle)+'%';
-    const gears=['N','1st','2nd','3rd','4th','5th'];
-    // gear based on mph bands matching e-tron's transmission
-    const g = speedMph < 8 ? 0 : speedMph < 22 ? 1 : speedMph < 38 ? 2 :
-              speedMph < 55 ? 3 : speedMph < 75 ? 4 : 5;
+    const gears=['N','1st','2nd','3rd','4th','5th','6th'];
+    // gear based on mph bands (0-120 mph)
+    const g = speedMph < 6 ? 0 : speedMph < 18 ? 1 : speedMph < 34 ? 2 :
+              speedMph < 52 ? 3 : speedMph < 78 ? 4 : speedMph < 102 ? 5 : 6;
     document.getElementById('sim-gear-val').textContent = gears[g];
     const bars=document.querySelectorAll('.viz-bar'), now=Date.now();
     bars.forEach((b,i)=>{
@@ -1669,7 +1669,7 @@
     document.getElementById('sim-rpm-val').style.display = 'none';
     document.getElementById('gauge-loading').style.display = 'block';
     document.getElementById('gauge-loading').textContent = p.live ? 'Loading…' : 'Starting…';
-    document.getElementById('sim-speed-lbl').textContent = p.useRealSamples ? 'mph' : 'km/h';
+    document.getElementById('sim-speed-lbl').textContent = 'mph';
     document.getElementById('sim-speed-val').textContent='0';
     document.getElementById('sim-throttle-val').textContent='0%';
     document.getElementById('sim-gear-val').textContent='N';
