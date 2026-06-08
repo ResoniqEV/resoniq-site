@@ -1867,9 +1867,31 @@
 
     async load() {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // ── EQ chain: low-shelf boost → lowpass → masterGain ──
+      // Cuts granular rattle (>2.5kHz) and boosts engine roar frequencies (<500Hz)
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.value = document.getElementById('sim-vol').value / 100 * 0.8;
+
+      // Low-shelf: +7dB below 420Hz — adds body/roar to the low end
+      this.eqLow = this.ctx.createBiquadFilter();
+      this.eqLow.type = 'lowshelf';
+      this.eqLow.frequency.value = 420;
+      this.eqLow.gain.value = 7;
+
+      // Lowpass: roll off rattle above 2400Hz, Q=0.8 for a smooth slope
+      this.eqLP = this.ctx.createBiquadFilter();
+      this.eqLP.type = 'lowpass';
+      this.eqLP.frequency.value = 2400;
+      this.eqLP.Q.value = 0.8;
+
+      // Chain: layers → eqLow → eqLP → masterGain → speakers
+      this.eqLow.connect(this.eqLP);
+      this.eqLP.connect(this.masterGain);
       this.masterGain.connect(this.ctx.destination);
+
+      // All layer gain nodes connect to eqLow instead of masterGain directly
+      this._layerDest = this.eqLow;
 
       const f = this.profile.folder || 'sounds/';
 
@@ -1914,9 +1936,9 @@
         this.multiLayer = true;
         this.layers = ML_LAYERS.map((def, i) => {
           const src = makeSrc(layerBufs[i]);
-          src.playbackRate.value = 1.0; // start at natural pitch
-          const g   = this.ctx.createGain(); g.gain.value = 0;
-          src.connect(g); g.connect(this.masterGain);
+          src.playbackRate.value = 1.0;
+          const g = this.ctx.createGain(); g.gain.value = 0;
+          src.connect(g); g.connect(this._layerDest);
           src.start();
           return { ...def, src, g };
         });
@@ -1937,11 +1959,11 @@
 
         this.idleSrc = makeSrc(idleBuf);
         this.idleG   = this.ctx.createGain(); this.idleG.gain.value = 0;
-        this.idleSrc.connect(this.idleG); this.idleG.connect(this.masterGain);
+        this.idleSrc.connect(this.idleG); this.idleG.connect(this._layerDest);
 
         this.engSrc  = makeSrc(engBuf);
         this.engG    = this.ctx.createGain(); this.engG.gain.value = 0;
-        this.engSrc.connect(this.engG); this.engG.connect(this.masterGain);
+        this.engSrc.connect(this.engG); this.engG.connect(this._layerDest);
 
         this.idleSrc.start(); this.engSrc.start();
       }
