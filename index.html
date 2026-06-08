@@ -49,11 +49,21 @@
   /* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    /* Background fills behind Dynamic Island / notch */
     background: rgba(9,9,11,0.92); backdrop-filter: blur(24px) saturate(1.5);
     border-bottom: 1px solid var(--bd);
-    display: flex; align-items: flex-end; justify-content: space-between;
-    padding: env(safe-area-inset-top) clamp(20px,5vw,60px) 0;
-    height: calc(62px + env(safe-area-inset-top));
+    /* Extend nav box up into the safe area so bg is flush with top edge */
+    padding-top: env(safe-area-inset-top);
+    /* Transition for show-on-scroll */
+    transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
+  }
+  nav.nav-hidden { transform: translateY(-110%); opacity: 0; pointer-events: none; }
+
+  /* Inner row always 62px, content sits below the safe area */
+  .nav-row {
+    height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(20px,5vw,60px);
   }
   .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -.03em; color: #fff; text-decoration: none; }
   .nav-logo em { color: var(--rd); font-style: normal; }
@@ -73,7 +83,7 @@
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
     position: relative; overflow: hidden;
-    padding: calc(130px + env(safe-area-inset-top)) clamp(20px,5vw,60px) 80px;
+    padding: calc(80px + 62px + env(safe-area-inset-top)) clamp(20px,5vw,60px) 80px;
   }
   .hero-bg {
     position: absolute; inset: 0; z-index: 0;
@@ -655,10 +665,12 @@
       height:auto; background:rgba(9,9,11,.96); backdrop-filter:blur(24px) saturate(1.4);
       border-top:1px solid var(--bd);
       display:flex; justify-content:space-around; align-items:center;
-      padding:10px 0 env(safe-area-inset-bottom);
-      /* min height so tabs are always tappable above home bar */
+      padding:10px 0;
+      /* Flush with home indicator — content sits above it */
       padding-bottom: max(env(safe-area-inset-bottom), 10px);
+      transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
     }
+    .mobile-nav.nav-hidden { transform: translateY(110%); opacity: 0; pointer-events: none; }
     .mobile-nav a {
       display:flex; align-items:center; justify-content:center;
       color:var(--mu); text-decoration:none; padding:6px 8px;
@@ -697,14 +709,16 @@
 <body>
 
 <!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">Res<em>on</em>iq</a>
-  <div class="nav-links">
-    <a href="#how">How It Works</a>
-    <a href="#sound">Sound</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#waitlist" class="nav-cta">Get Early Access</a>
+<nav class="nav-hidden">
+  <div class="nav-row">
+    <a class="nav-logo" href="#">Res<em>on</em>iq</a>
+    <div class="nav-links">
+      <a href="#how">How It Works</a>
+      <a href="#sound">Sound</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#waitlist" class="nav-cta">Get Early Access</a>
+    </div>
   </div>
 </nav>
 
@@ -1434,6 +1448,19 @@
 </div>
 
 <script>
+  // ── SHOW NAV ON SCROLL ──
+  const topNav = document.querySelector('nav');
+  let navsRevealed = false;
+  function revealNavs() {
+    if (navsRevealed || window.scrollY < 40) return;
+    navsRevealed = true;
+    topNav.classList.remove('nav-hidden');
+    const mobileNavEl = document.querySelector('.mobile-nav');
+    if (mobileNavEl) mobileNavEl.classList.remove('nav-hidden');
+    window.removeEventListener('scroll', revealNavs, { passive: true });
+  }
+  window.addEventListener('scroll', revealNavs, { passive: true });
+
   // ── SCROLL PROGRESS BAR ──
   const progressBar = document.createElement('div');
   progressBar.className = 'scroll-progress';
@@ -1536,7 +1563,7 @@
 
   // ── MOBILE BOTTOM NAV ──
   const mNav = document.createElement('nav');
-  mNav.className = 'mobile-nav';
+  mNav.className = 'mobile-nav nav-hidden';
   mNav.innerHTML = [
     ['#how',      'How'],
     ['#sound',    'Sound'],
