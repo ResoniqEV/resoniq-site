@@ -556,10 +556,13 @@
 
   /* ── SCROLL PROGRESS ── */
   .scroll-progress {
-    position:fixed; top:0; left:0; height:2px; z-index:10000;
+    position:fixed;
+    /* Sits at the bottom edge of the nav bar — always visible, never behind Dynamic Island */
+    top: calc(62px + env(safe-area-inset-top) - 2px);
+    left:0; height:2px; z-index:10000;
     background:linear-gradient(90deg,var(--rd),#ff6b7a);
     width:0%; pointer-events:none;
-    box-shadow:0 0 10px rgba(232,41,60,.7), 0 0 20px rgba(232,41,60,.3);
+    box-shadow:0 0 10px rgba(232,41,60,.6), 0 0 20px rgba(232,41,60,.25);
     transition:width .08s linear;
   }
 
@@ -658,38 +661,71 @@
     50%      { box-shadow:0 0 32px rgba(34,197,94,.55), 0 0 0 6px rgba(34,197,94,.06); }
   }
 
-  /* ── MOBILE BOTTOM NAV ── */
-  @media(max-width:640px) {
-    .mobile-nav {
-      position:fixed; top:auto !important; bottom:0; left:0; right:0; z-index:998;
-      height:auto; background:rgba(9,9,11,.96); backdrop-filter:blur(24px) saturate(1.4);
-      border-top:1px solid var(--bd);
-      display:flex; justify-content:space-around; align-items:center;
-      padding:10px 0;
-      /* Flush with home indicator — content sits above it */
-      padding-bottom: max(env(safe-area-inset-bottom), 10px);
-      transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
-    }
-    .mobile-nav.nav-hidden { transform: translateY(110%); opacity: 0; pointer-events: none; }
-    .mobile-nav a {
-      display:flex; align-items:center; justify-content:center;
-      color:var(--mu); text-decoration:none; padding:6px 8px;
-      transition:color .2s;
-      position:relative;
-    }
-    .mobile-nav a .mnav-label {
-      font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-    }
-    .mobile-nav a::after {
-      content:''; position:absolute; bottom:-2px; left:50%; transform:translateX(-50%);
-      width:0; height:2px; background:var(--rd); border-radius:2px;
-      transition:width .25s cubic-bezier(.22,1,.36,1);
-    }
-    .mobile-nav a.active { color:var(--tx); }
-    .mobile-nav a.active::after { width:18px; }
-    body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); }
+  /* ── HAMBURGER BUTTON ── */
+  .nav-hamburger {
+    display: none; background: none; border: none; cursor: pointer;
+    color: var(--tx2); padding: 8px; margin: -8px; border-radius: 8px;
+    transition: color .15s, background .15s;
   }
-  @media(min-width:641px) { .mobile-nav { display:none; } }
+  .nav-hamburger:hover { color: #fff; background: var(--bg3); }
+  @media(max-width:640px) { .nav-hamburger { display: flex; align-items: center; } }
+  @media(min-width:641px) { .nav-hamburger { display: none; } }
+
+  /* ── DRAWER OVERLAY ── */
+  .nav-overlay {
+    position: fixed; inset: 0; z-index: 1001;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+  }
+  .nav-overlay.open { opacity: 1; pointer-events: all; }
+
+  /* ── SLIDE-OUT DRAWER ── */
+  .nav-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 1002;
+    width: min(300px, 82vw);
+    background: var(--bg2); border-left: 1px solid var(--bd);
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    transform: translateX(110%);
+    transition: transform .38s cubic-bezier(.22,1,.36,1);
+    will-change: transform;
+  }
+  .nav-drawer.open { transform: translateX(0); }
+
+  .nav-drawer-header {
+    height: 62px; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 24px;
+    border-bottom: 1px solid var(--bd); flex-shrink: 0;
+  }
+  .nav-drawer-logo { font-size: 18px; font-weight: 800; letter-spacing: -.02em; color: #fff; }
+  .nav-drawer-logo em { color: var(--rd); font-style: normal; }
+  .nav-drawer-close {
+    background: var(--bg3); border: 1px solid var(--bd2); color: var(--mu);
+    width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; transition: color .15s, background .15s;
+  }
+  .nav-drawer-close:hover { color: #fff; background: var(--bd); }
+
+  .nav-drawer-links {
+    display: flex; flex-direction: column; padding: 16px 0; flex: 1; overflow-y: auto;
+  }
+  .nav-drawer-links a {
+    display: flex; align-items: center; padding: 16px 24px;
+    font-size: 15px; font-weight: 600; color: var(--tx3); text-decoration: none;
+    border-bottom: 1px solid var(--bd); transition: color .15s, background .15s;
+  }
+  .nav-drawer-links a:last-child { border-bottom: none; }
+  .nav-drawer-links a:hover { color: #fff; background: var(--bg3); }
+  .nav-drawer-links a.drawer-cta {
+    margin: 20px 24px 0; border: none; padding: 14px 24px;
+    background: var(--rd); color: #fff; border-radius: 12px;
+    font-weight: 700; justify-content: center;
+    transition: background .15s;
+  }
+  .nav-drawer-links a.drawer-cta:hover { background: var(--rd2); }
 
   /* ── MOBILE TAP FEEDBACK ── */
   @media(max-width:640px) {
@@ -719,8 +755,34 @@
       <a href="#pricing">Pricing</a>
       <a href="#waitlist" class="nav-cta">Get Early Access</a>
     </div>
+    <!-- Hamburger — mobile only -->
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">
+      <svg width="22" height="15" viewBox="0 0 22 15" fill="none">
+        <rect width="22" height="2" rx="1" fill="currentColor"/>
+        <rect x="4" y="6.5" width="18" height="2" rx="1" fill="currentColor"/>
+        <rect y="13" width="22" height="2" rx="1" fill="currentColor"/>
+      </svg>
+    </button>
   </div>
 </nav>
+
+<!-- Drawer overlay -->
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<!-- Slide-out drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-header">
+    <span class="nav-drawer-logo">Res<em>on</em>iq</span>
+    <button class="nav-drawer-close" id="nav-drawer-close">✕</button>
+  </div>
+  <div class="nav-drawer-links">
+    <a href="#how">How It Works</a>
+    <a href="#sound">Sound</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#waitlist" class="drawer-cta">Get Early Access →</a>
+  </div>
+</div>
 
 <!-- ═══════════ HERO ═══════════ -->
 <div class="hero">
@@ -1459,8 +1521,6 @@
     if (navsRevealed || window.scrollY < 40) return;
     navsRevealed = true;
     topNav.classList.remove('nav-hidden');
-    const mobileNavEl = document.querySelector('.mobile-nav');
-    if (mobileNavEl) mobileNavEl.classList.remove('nav-hidden');
     window.removeEventListener('scroll', revealNavs, { passive: true });
   }
   window.addEventListener('scroll', revealNavs, { passive: true });
@@ -1565,26 +1625,30 @@
   }, { threshold: 0.5 });
   document.querySelectorAll('.count-up').forEach(el => countObs.observe(el));
 
-  // ── MOBILE BOTTOM NAV ──
-  const mNav = document.createElement('nav');
-  mNav.className = 'mobile-nav nav-hidden';
-  mNav.innerHTML = [
-    ['#how',      'How'],
-    ['#sound',    'Sound'],
-    ['#roadmap',  'Road'],
-    ['#pricing',  'Price'],
-    ['#waitlist', 'Join'],
-  ].map(([h,l]) => `<a href="${h}"><span class="mnav-label">${l}</span></a>`).join('');
-  document.body.appendChild(mNav);
-  const mNavLinks = mNav.querySelectorAll('a');
-  window.addEventListener('scroll', () => {
-    let cur = '';
-    ['how','sound','roadmap','pricing','waitlist'].forEach(id => {
-      const s = document.getElementById(id);
-      if (s && window.scrollY >= s.offsetTop - 150) cur = id;
-    });
-    mNavLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
-  }, { passive: true });
+  // ── HAMBURGER DRAWER ──
+  (function() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const drawer    = document.getElementById('nav-drawer');
+    const overlay   = document.getElementById('nav-overlay');
+    const closeBtn  = document.getElementById('nav-drawer-close');
+    if (!hamburger) return;
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', openDrawer);
+    overlay.addEventListener('click', closeDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+  })();
 
   // Waitlist form
   async function submitWaitlist(e) {
