@@ -1104,7 +1104,7 @@
 <section class="section" id="sound">
   <div class="eyebrow">Sound Library</div>
   <h2>Choose your engine</h2>
-  <p class="lead">Each profile is a set of studio-recorded WAV loops — idle, full throttle — pitch-shifted in real time to match your driving.</p>
+  <p class="lead">Each profile is a set of studio-recorded WAV loops — idle through redline — crossfaded in real time to match your driving.</p>
 
   <!-- Recommendation notice -->
   <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:14px;">
@@ -2098,17 +2098,9 @@
         const VOL   = 0.75;
 
         this.layers.forEach((layer, i) => {
-          // Gentle pitch shift: clamped to 0.82-1.22 so files don't sound unnatural
-          const effectiveRPM = Math.max(rpm, 300);
-          const pitch = Math.max(0.82, Math.min(1.22,
-            effectiveRPM / layer.centerRPM
-          ));
-          // Apply rev limiter pitch dip to top layer only
-          const finalPitch = (i === this.layers.length-1 && this.rl_amount > 0.01)
-            ? pitch * (1.0 - 0.15 * this.rl_amount) + this.rl_bounce_offset
-            : pitch;
-
-          layer.src.playbackRate.value = Math.max(0.5, finalPitch);
+          // No pitch shifting — files play at natural rate 1.0.
+          // Crossfade gains do all the work; pitch artifacts avoided entirely.
+          layer.src.playbackRate.value = 1.0;
           layer.g.gain.setTargetAtTime(gains[i] * VOL, t, 0.04);
         });
 
