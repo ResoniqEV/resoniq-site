@@ -1448,6 +1448,10 @@
 </div>
 
 <script>
+  // ── ALWAYS START AT TOP ON LOAD/REFRESH ──
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
   // ── SHOW NAV ON SCROLL ──
   const topNav = document.querySelector('nav');
   let navsRevealed = false;
