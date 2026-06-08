@@ -1819,25 +1819,31 @@
    *  Rate & gain smoothing time-constants also matched to firmware.
    *  Speed sim: 0→60 mph in 4.5 s at full throttle.
    */
+  // ── MULTI-LAYER CONFIG ──
+  // Each entry: file loaded from pack folder, centerRPM = RPM this was recorded at,
+  // halfWidth = RPM distance over which gain fades to 0 (controls crossfade overlap).
+  const ML_LAYERS = [
+    { file:'idle.wav',    centerRPM:  800, halfWidth: 1400 },
+    { file:'low.wav',     centerRPM: 2000, halfWidth: 1500 },
+    { file:'mid.wav',     centerRPM: 3500, halfWidth: 1600 },
+    { file:'high.wav',    centerRPM: 5500, halfWidth: 1800 },
+    { file:'redline.wav', centerRPM: 7500, halfWidth: 2000 },
+  ];
+
   class SampleEngine {
-    // Exact port of etron_sound_v7.ino — every constant from firmware defaults:
-    //   cfg_throttle_weight=0.65  cfg_speed_weight=0.35
-    //   cfg_rate_min=0.38         cfg_rate_max=1.58
-    //   cfg_rpm_smoothing=0.20    (IIR alpha — lower = faster)
-    //   cfg_rev_hang_time=0.40 s
-    //   cfg_rl_throttle=81%       cfg_rl_speed_max=8 kph
-    //   cfg_rl_depth=0.08         cfg_rl_speed=1.0
-    //   cfg_idle_throttle_max=0   cfg_idle_speed_max=0
+    // Exact port of etron_sound_v7.ino firmware constants.
+    // Multi-layer mode: loads idle/low/mid/high/redline.wav and crossfades
+    // between them using normalized triangle windows keyed on virtual RPM.
+    // Legacy 2-layer mode: falls back to idle.wav + engine.wav if extras absent.
 
     constructor(profile) {
       this.profile   = profile;
       this.throttle  = 0;
       this.speedKph  = 0;
 
-      // firmware state names kept identical
       this.smooth_rpm      = 0;
       this.virtual_rpm     = 0;
-      this.sm_rate         = 0.38;
+      this.sm_rate         = 1.0;
       this.rev_hang_timer  = 0;
       this.rev_hang_rpm    = 0;
       this.rl_amount       = 0;
@@ -1845,15 +1851,15 @@
       this.rl_irreg_timer  = 0;
       this.rl_irreg_offset = 0;
       this.rl_bounce_offset= 0;
-      this.using_idle          = true;
-      this.throttle_was_high   = false;
+      this.using_idle      = true;
+      this.multiLayer      = false;
+      this.layers          = [];
 
-      this.engineOn  = false;   // starts off — user must press ENGINE START
+      this.engineOn  = false;
       this._starting = false;
-
-      this.running = false;
-      this.animId  = null;
-      this.lastTS  = null;
+      this.running   = false;
+      this.animId    = null;
+      this.lastTS    = null;
     }
 
     async load() {
@@ -1862,14 +1868,8 @@
       this.masterGain.gain.value = document.getElementById('sim-vol').value / 100 * 0.8;
       this.masterGain.connect(this.ctx.destination);
 
-      const loadBuf = async url => {
-        const r = await fetch(url);
-        return this.ctx.decodeAudioData(await r.arrayBuffer());
-      };
-
       const f = this.profile.folder || 'sounds/';
 
-      // Load startup (optional — not every pack has one)
       const tryLoad = async url => {
         try {
           const r = await fetch(url);
@@ -1878,16 +1878,10 @@
         } catch(e) { return null; }
       };
 
-      const [idleBuf, engBuf, startupBuf] = await Promise.all([
-        loadBuf(f+'idle.wav'),
-        loadBuf(f+'engine.wav'),
-        tryLoad(f+'startup.wav'),
-      ]);
-
-      // Find zero-crossing loop points so the loop boundary jumps near 0→0 (no click)
+      // Zero-crossing loop points — prevents clicks at loop boundary
       const loopPts = buf => {
         const d = buf.getChannelData(0), sr = buf.sampleRate;
-        const search = Math.floor(0.08 * sr); // search within first/last 80ms
+        const search = Math.floor(0.08 * sr);
         let start = 0, end = buf.duration;
         for(let i = 1; i < search && i < d.length; i++)
           if(d[i-1] < 0 && d[i] >= 0) { start = i / sr; break; }
@@ -1896,25 +1890,57 @@
         return { start, end };
       };
 
-      this.idleSrc = this.ctx.createBufferSource();
-      this.idleSrc.buffer = idleBuf; this.idleSrc.loop = true;
-      const idleLP = loopPts(idleBuf);
-      this.idleSrc.loopStart = idleLP.start;
-      this.idleSrc.loopEnd   = idleLP.end;
-      this.idleG = this.ctx.createGain(); this.idleG.gain.value = 0;
-      this.idleSrc.connect(this.idleG); this.idleG.connect(this.masterGain);
+      const makeSrc = (buf) => {
+        const src = this.ctx.createBufferSource();
+        src.buffer = buf; src.loop = true;
+        const lp = loopPts(buf);
+        src.loopStart = lp.start; src.loopEnd = lp.end;
+        return src;
+      };
 
-      this.engSrc = this.ctx.createBufferSource();
-      this.engSrc.buffer = engBuf; this.engSrc.loop = true;
-      const engLP = loopPts(engBuf);
-      this.engSrc.loopStart = engLP.start;
-      this.engSrc.loopEnd   = engLP.end;
-      this.engG = this.ctx.createGain(); this.engG.gain.value = 0;
-      this.engSrc.connect(this.engG); this.engG.connect(this.masterGain);
+      // Try to load all 5 multi-layer files in parallel
+      const [startupBuf, ...layerBufs] = await Promise.all([
+        tryLoad(f+'startup.wav'),
+        ...ML_LAYERS.map(l => tryLoad(f+l.file)),
+      ]);
 
       this.startupBuf = startupBuf;
-      this.idleSrc.start(); this.engSrc.start();
-      // Engine starts OFF — user presses ENGINE START to begin
+
+      // Multi-layer: all 5 files present
+      if(layerBufs.every(b => b !== null)) {
+        this.multiLayer = true;
+        this.layers = ML_LAYERS.map((def, i) => {
+          const src = makeSrc(layerBufs[i]);
+          const g   = this.ctx.createGain(); g.gain.value = 0;
+          src.connect(g); g.connect(this.masterGain);
+          src.start();
+          return { ...def, src, g };
+        });
+        // Aliases for startup crossfade compatibility
+        this.idleG   = this.layers[0].g;
+        this.idleSrc = this.layers[0].src;
+        this.engG    = this.layers[this.layers.length-1].g;
+        this.engSrc  = this.layers[this.layers.length-1].src;
+
+      } else {
+        // Legacy 2-layer fallback (idle.wav + engine.wav)
+        this.multiLayer = false;
+        const [idleBuf, engBuf] = await Promise.all([
+          tryLoad(f+'idle.wav'),
+          tryLoad(f+'engine.wav'),
+        ]);
+        if(!idleBuf || !engBuf) throw new Error('Missing audio files in pack: '+f);
+
+        this.idleSrc = makeSrc(idleBuf);
+        this.idleG   = this.ctx.createGain(); this.idleG.gain.value = 0;
+        this.idleSrc.connect(this.idleG); this.idleG.connect(this.masterGain);
+
+        this.engSrc  = makeSrc(engBuf);
+        this.engG    = this.ctx.createGain(); this.engG.gain.value = 0;
+        this.engSrc.connect(this.engG); this.engG.connect(this.masterGain);
+
+        this.idleSrc.start(); this.engSrc.start();
+      }
 
       this.running = true;
       document.getElementById('gauge-loading').style.display = 'none';
@@ -1924,19 +1950,27 @@
       simSetPowerState('off');
     }
 
+    // Normalized triangle-window gains across all layers for a given RPM
+    _mlGains(rpm) {
+      const raw = this.layers.map(l =>
+        Math.max(0, 1 - Math.abs(rpm - l.centerRPM) / l.halfWidth)
+      );
+      const sum = raw.reduce((a,b) => a+b, 0) || 1;
+      return raw.map(g => g / sum);
+    }
+
     startEngine() {
       if(this.engineOn || this._starting) return;
       this._starting = true;
       simSetPowerState('starting');
 
-      const IDLE_GAIN = 0.55;
-      const XFADE     = 0.60; // crossfade overlap in seconds
+      const IDLE_GAIN = 0.65;
+      const XFADE     = 0.60;
 
       if(this.startupBuf) {
         const dur = this.startupBuf.duration;
         const t   = this.ctx.currentTime;
 
-        // Startup plays through its own gain node at the same level as idle
         const startupGain = this.ctx.createGain();
         startupGain.gain.value = IDLE_GAIN;
         startupGain.connect(this.masterGain);
@@ -1946,12 +1980,11 @@
         startupSrc.connect(startupGain);
         startupSrc.start(t);
 
-        // Simultaneous crossfade: startup fades OUT, idle fades IN
         const xStart = t + Math.max(0, dur - XFADE);
-        const TC     = XFADE / 4; // time-constant (~98% done within XFADE seconds)
+        const TC     = XFADE / 4;
 
-        startupGain.gain.setTargetAtTime(0,         xStart, TC);
-        this.idleG.gain.setTargetAtTime(IDLE_GAIN,  xStart, TC);
+        startupGain.gain.setTargetAtTime(0,          xStart, TC);
+        this.idleG.gain.setTargetAtTime(IDLE_GAIN,   xStart, TC);
 
         setTimeout(() => {
           this._starting = false;
@@ -1961,7 +1994,6 @@
         }, (dur + 0.15) * 1000);
 
       } else {
-        // No startup file — simple fade into idle
         this.idleG.gain.setTargetAtTime(IDLE_GAIN, this.ctx.currentTime, 0.30);
         setTimeout(() => {
           this._starting = false;
@@ -1978,13 +2010,16 @@
       this.speedKph  = 0;
       this.smooth_rpm = 0;
       this.virtual_rpm = 0;
-      this.sm_rate   = 0.38;
+      this.sm_rate   = 1.0;
       this.using_idle = true;
-      this.throttle_was_high = false;
       if(this.ctx) {
         const t = this.ctx.currentTime;
-        this.idleG.gain.setTargetAtTime(0, t, 0.12);
-        this.engG.gain.setTargetAtTime(0,  t, 0.12);
+        if(this.multiLayer) {
+          this.layers.forEach(l => l.g.gain.setTargetAtTime(0, t, 0.12));
+        } else {
+          this.idleG.gain.setTargetAtTime(0, t, 0.12);
+          this.engG.gain.setTargetAtTime(0,  t, 0.12);
+        }
       }
       document.getElementById('sim-throttle').value = 0;
       simSetPowerState('off');
@@ -1994,10 +2029,9 @@
       if(!this.running) return;
 
       const now = performance.now();
-      const dt  = Math.min((now - this.lastTS) / 1000, 0.05); // seconds, capped
+      const dt  = Math.min((now - this.lastTS) / 1000, 0.05);
       this.lastTS = now;
 
-      // Engine off — show zeros, keep loop alive
       if(!this.engineOn) {
         document.getElementById('sim-rpm-val').textContent = '0';
         updateGaugeArc(0);
@@ -2006,25 +2040,22 @@
         return;
       }
 
-      const t   = this.ctx.currentTime;
-      const th  = this.throttle; // 0-100
+      const t  = this.ctx.currentTime;
+      const th = this.throttle;
 
-      // SPEED SIMULATION
-      // ESP reads real speed via OBD2 010D. We simulate 0-60 mph (96.5 kph) in 4.5 s.
-      const ACCEL = 96.5 / 4.5; // kph/s — keeps 0-60 mph in 4.5 s feel
-      const targetSpd = (th / 100) * 193.1; // 120 mph in kph
+      // Speed simulation
+      const ACCEL = 96.5 / 4.5;
+      const targetSpd = (th / 100) * 193.1;
       if(targetSpd > this.speedKph)
         this.speedKph = Math.min(this.speedKph + ACCEL * (th/100) * dt, targetSpd);
       else
         this.speedKph = Math.max(this.speedKph - ACCEL * 1.8 * dt, targetSpd);
 
-      // compute_virtual_rpm() PORT
-      // float sn = min(speed_kph/100.0f, 1.0f)*100.0f;
-      // float target = (audio_throttle_pct*0.65 + sn*0.35)*80.0f;
+      // Virtual RPM (matches ESP32 firmware formula exactly)
       const sn = Math.min(this.speedKph / 100.0, 1.0) * 100.0;
-      let target = (th * 0.65 + sn * 0.35) * 80.0; // 0-8000
+      let target = (th * 0.65 + sn * 0.35) * 80.0;
 
-      // Rev hang: cfg_rev_hang_enabled=true, cfg_rev_hang_time=0.40 s
+      // Rev hang
       if(target >= this.smooth_rpm * 0.85) {
         this.rev_hang_timer = 0;
         this.rev_hang_rpm   = this.smooth_rpm;
@@ -2036,73 +2067,78 @@
         }
       }
 
-      // IIR: smooth_rpm = smooth_rpm*0.20 + target*0.80
-      // Runs ~1000x/s on ESP (delay(1) in loop). Simulate 16 iters per rAF frame
-      // so convergence matches firmware (~instant relative to audio pitch change).
       for(let i = 0; i < 16; i++)
         this.smooth_rpm = this.smooth_rpm * 0.20 + target * 0.80;
       this.virtual_rpm = this.smooth_rpm;
 
-      // loop() RATE PORT
-      // float rate = cfg_rate_min + ((virtual_rpm/8000.0f)*(cfg_rate_max-cfg_rate_min));
-      // rate = constrain(rate, cfg_rate_min, cfg_rate_max);
-      let rate = 0.38 + (this.virtual_rpm / 8000.0) * (1.42 - 0.38); // max pitch lowered to 1.42
-      rate = Math.max(0.38, Math.min(rate, 1.42));
+      const rpm = this.virtual_rpm;
 
-      // REV LIMITER PORT
-      // bool should_rl = (throttle >= 81) && (speed_kph <= 8);
-      // rl_amount += (should_rl ? 1 : 0 - rl_amount)*0.08;
-      // rl_bounce_offset = -(1-|sin(rl_phase)|)*cfg_rl_depth + rl_irreg_offset
-      // rate = min(rate, cfg_rate_max*(1 - 0.20*rl_amount))
-      // target_rate = constrain(rate + rl_bounce_offset, 0.1, cfg_rate_max)
+      // Rev limiter
       const should_rl = th >= 81 && this.speedKph <= 8;
       this.rl_amount += ((should_rl ? 1.0 : 0.0) - this.rl_amount) * 0.08;
       if(should_rl) {
-        this.rl_phase       += 1.0 * dt * 2 * Math.PI; // cfg_rl_speed=1.0
+        this.rl_phase       += 1.0 * dt * 2 * Math.PI;
         this.rl_irreg_timer -= dt;
         if(this.rl_irreg_timer <= 0) {
-          this.rl_irreg_offset = (Math.random()*2-1) * 1.0 * 0.015; // cfg_rl_irregularity=1.0
+          this.rl_irreg_offset = (Math.random()*2-1) * 0.015;
           this.rl_irreg_timer  = 0.1 + Math.random() * 0.15;
         }
         this.rl_bounce_offset = -(1 - Math.abs(Math.sin(this.rl_phase))) * 0.08
-                                + this.rl_irreg_offset; // cfg_rl_depth=0.08
+                                + this.rl_irreg_offset;
       } else {
         this.rl_bounce_offset = 0;
       }
-      if(this.rl_amount > 0.01)
-        rate = Math.min(rate, 1.42 * (1.0 - 0.20 * this.rl_amount));
-      const target_rate = Math.max(0.1, Math.min(rate + this.rl_bounce_offset, 1.42));
 
-      // audio_task() SM_RATE SMOOTHING PORT
-      // sm_rate += (rate - sm_rate)*0.035  per 512-sample chunk at 44100 Hz
-      // chunk rate = 44100/512 = 86.1/s  =>  tau = 1/(0.035*86.1) = 325 ms
-      // per rAF frame (16.7 ms) = 1.44 chunks => alpha_per_frame = 0.050
-      this.sm_rate += (target_rate - this.sm_rate) * 0.050;
+      if(this.multiLayer) {
+        // ── MULTI-LAYER MODE ──
+        // Each layer plays near rate 1.0 (recorded at its centerRPM).
+        // Small pitch nudge (±20%) within each layer's zone for smooth blending.
+        // Crossfade weights from normalized triangle windows.
+        const gains = this._mlGains(rpm);
+        const VOL   = 0.75;
 
-      // Idle plays at natural pitch (recorded at real idle speed)
-      // Only engine gets pitch-shifted to follow virtual RPM
-      this.idleSrc.playbackRate.value = 1.0;
-      this.engSrc.playbackRate.value  = this.sm_rate;
+        this.layers.forEach((layer, i) => {
+          // Gentle pitch shift: clamped to 0.82-1.22 so files don't sound unnatural
+          const effectiveRPM = Math.max(rpm, 300);
+          const pitch = Math.max(0.82, Math.min(1.22,
+            effectiveRPM / layer.centerRPM
+          ));
+          // Apply rev limiter pitch dip to top layer only
+          const finalPitch = (i === this.layers.length-1 && this.rl_amount > 0.01)
+            ? pitch * (1.0 - 0.15 * this.rl_amount) + this.rl_bounce_offset
+            : pitch;
 
-      // IDLE/ENGINE GAIN SWITCH PORT
-      // bool should_idle = (throttle <= cfg_idle_throttle_max)  // 0
-      //                 && (speed_kph <= cfg_idle_speed_max);   // 0
-      // sm_eng  += (target_engine_gain - sm_eng)  * 0.040  per chunk => tau=284 ms
-      // sm_idl  += (target_idle_gain   - sm_idl)  * 0.040
-      const should_idle = th <= 0 && this.speedKph <= 0;
-      if(should_idle && !this.using_idle) {
-        this.using_idle = true;
-        this.idleG.gain.setTargetAtTime(0.55, t, 0.284); // cfg_vol_idle mapped
-        this.engG.gain.setTargetAtTime(0,     t, 0.284);
-      } else if(!should_idle && this.using_idle) {
-        this.using_idle = false;
-        this.idleG.gain.setTargetAtTime(0,    t, 0.284);
-        this.engG.gain.setTargetAtTime(0.75,  t, 0.284); // cfg_vol_engine mapped
+          layer.src.playbackRate.value = Math.max(0.5, finalPitch);
+          layer.g.gain.setTargetAtTime(gains[i] * VOL, t, 0.04);
+        });
+
+      } else {
+        // ── LEGACY 2-LAYER MODE ──
+        let rate = 0.38 + (rpm / 8000.0) * (1.42 - 0.38);
+        rate = Math.max(0.38, Math.min(rate, 1.42));
+        if(this.rl_amount > 0.01)
+          rate = Math.min(rate, 1.42 * (1.0 - 0.20 * this.rl_amount));
+        const target_rate = Math.max(0.1, Math.min(rate + this.rl_bounce_offset, 1.42));
+        this.sm_rate += (target_rate - this.sm_rate) * 0.050;
+
+        this.idleSrc.playbackRate.value = 1.0;
+        this.engSrc.playbackRate.value  = this.sm_rate;
+
+        const should_idle = th <= 0 && this.speedKph <= 0;
+        if(should_idle && !this.using_idle) {
+          this.using_idle = true;
+          this.idleG.gain.setTargetAtTime(0.55, t, 0.284);
+          this.engG.gain.setTargetAtTime(0,     t, 0.284);
+        } else if(!should_idle && this.using_idle) {
+          this.using_idle = false;
+          this.idleG.gain.setTargetAtTime(0,    t, 0.284);
+          this.engG.gain.setTargetAtTime(0.75,  t, 0.284);
+        }
       }
 
-      // UI: display virtual_rpm (0-8000) — same value as ESP web panel shows
-      const ratio    = Math.min(this.virtual_rpm / 8000, 1);
-      const dispRPM  = Math.round(this.virtual_rpm);
+      // UI
+      const ratio   = Math.min(rpm / 8000, 1);
+      const dispRPM = Math.round(rpm);
       document.getElementById('sim-rpm-val').textContent =
         dispRPM >= 1000 ? (dispRPM/1000).toFixed(1)+'k' : dispRPM;
 
@@ -2130,7 +2166,11 @@
       this.running = false;
       if(this.animId) cancelAnimationFrame(this.animId);
       if(this.ctx) {
-        try { this.idleSrc.stop(); this.engSrc.stop(); } catch(e){}
+        if(this.multiLayer) {
+          this.layers.forEach(l => { try { l.src.stop(); } catch(e){} });
+        } else {
+          try { this.idleSrc.stop(); this.engSrc.stop(); } catch(e){}
+        }
         this.ctx.close(); this.ctx = null;
       }
     }
