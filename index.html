@@ -50,7 +50,7 @@
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     /* Background fills behind Dynamic Island / notch */
-    background: rgba(9,9,11,0.92); backdrop-filter: blur(24px) saturate(1.5);
+    background: #09090b; backdrop-filter: blur(24px) saturate(1.5);
     border-bottom: 1px solid var(--bd);
     /* Extend nav box up into the safe area so bg is flush with top edge */
     padding-top: env(safe-area-inset-top);
@@ -83,7 +83,7 @@
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
     position: relative; overflow: hidden;
-    padding: calc(80px + 62px + env(safe-area-inset-top)) clamp(20px,5vw,60px) 80px;
+    padding: calc(env(safe-area-inset-top) + 36px) clamp(20px,5vw,60px) 80px;
   }
   .hero-bg {
     position: absolute; inset: 0; z-index: 0;
