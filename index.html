@@ -1911,6 +1911,7 @@
         this.multiLayer = true;
         this.layers = ML_LAYERS.map((def, i) => {
           const src = makeSrc(layerBufs[i]);
+          src.playbackRate.value = 1.0; // start at natural pitch
           const g   = this.ctx.createGain(); g.gain.value = 0;
           src.connect(g); g.connect(this.masterGain);
           src.start();
@@ -2091,16 +2092,22 @@
 
       if(this.multiLayer) {
         // ── MULTI-LAYER MODE ──
-        // Each layer plays near rate 1.0 (recorded at its centerRPM).
-        // Small pitch nudge (±20%) within each layer's zone for smooth blending.
-        // Crossfade weights from normalized triangle windows.
+        // Each layer is pitch-shifted to match virtual_rpm exactly.
+        // rate = virtual_rpm / layer.centerRPM   (1.0 = sounds exactly as recorded)
+        // Clamped to ±38% max so no layer ever sounds like a vacuum.
+        // Outside a layer's gain zone its volume is ~0 anyway, so clamping
+        // only matters during the crossfade overlap — which is the point.
         const gains = this._mlGains(rpm);
         const VOL   = 0.75;
+        // Use a floor so near-zero RPM doesn't push rates to 0
+        const effectiveRpm = Math.max(rpm, 300);
 
         this.layers.forEach((layer, i) => {
-          // No pitch shifting — files play at natural rate 1.0.
-          // Crossfade gains do all the work; pitch artifacts avoided entirely.
-          layer.src.playbackRate.value = 1.0;
+          const targetRate = Math.max(0.62, Math.min(1.38,
+            effectiveRpm / layer.centerRPM
+          ));
+          // Smooth rate via AudioParam to avoid zipper noise on fast RPM changes
+          layer.src.playbackRate.setTargetAtTime(targetRate, t, 0.10);
           layer.g.gain.setTargetAtTime(gains[i] * VOL, t, 0.18);
         });
 
