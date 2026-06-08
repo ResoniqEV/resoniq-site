@@ -1823,11 +1823,11 @@
   // Each entry: file loaded from pack folder, centerRPM = RPM this was recorded at,
   // halfWidth = RPM distance over which gain fades to 0 (controls crossfade overlap).
   const ML_LAYERS = [
-    { file:'idle.wav',    centerRPM:  800, halfWidth: 1400 },
-    { file:'low.wav',     centerRPM: 2000, halfWidth: 1500 },
-    { file:'mid.wav',     centerRPM: 3500, halfWidth: 1600 },
-    { file:'high.wav',    centerRPM: 5500, halfWidth: 1800 },
-    { file:'redline.wav', centerRPM: 7500, halfWidth: 2000 },
+    { file:'idle.wav',    centerRPM:  800, halfWidth: 1800 },
+    { file:'low.wav',     centerRPM: 2000, halfWidth: 2000 },
+    { file:'mid.wav',     centerRPM: 3500, halfWidth: 2200 },
+    { file:'high.wav',    centerRPM: 5500, halfWidth: 2400 },
+    { file:'redline.wav', centerRPM: 7500, halfWidth: 2600 },
   ];
 
   class SampleEngine {
@@ -1881,7 +1881,7 @@
       // Zero-crossing loop points — prevents clicks at loop boundary
       const loopPts = buf => {
         const d = buf.getChannelData(0), sr = buf.sampleRate;
-        const search = Math.floor(0.08 * sr);
+        const search = Math.floor(0.25 * sr);
         let start = 0, end = buf.duration;
         for(let i = 1; i < search && i < d.length; i++)
           if(d[i-1] < 0 && d[i] >= 0) { start = i / sr; break; }
@@ -2101,7 +2101,7 @@
           // No pitch shifting — files play at natural rate 1.0.
           // Crossfade gains do all the work; pitch artifacts avoided entirely.
           layer.src.playbackRate.value = 1.0;
-          layer.g.gain.setTargetAtTime(gains[i] * VOL, t, 0.04);
+          layer.g.gain.setTargetAtTime(gains[i] * VOL, t, 0.18);
         });
 
       } else {
