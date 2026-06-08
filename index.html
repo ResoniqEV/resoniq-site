@@ -1822,12 +1822,15 @@
   // ── MULTI-LAYER CONFIG ──
   // Each entry: file loaded from pack folder, centerRPM = RPM this was recorded at,
   // halfWidth = RPM distance over which gain fades to 0 (controls crossfade overlap).
+  // halfWidth = RPM distance at which a layer's gain reaches 0.
+  // Keep it roughly half the gap to the next layer so only 2 layers
+  // ever blend at once, and each file sounds solo at its center RPM.
   const ML_LAYERS = [
-    { file:'idle.wav',    centerRPM:  800, halfWidth: 1800 },
-    { file:'low.wav',     centerRPM: 2000, halfWidth: 2000 },
-    { file:'mid.wav',     centerRPM: 3500, halfWidth: 2200 },
-    { file:'high.wav',    centerRPM: 5500, halfWidth: 2400 },
-    { file:'redline.wav', centerRPM: 7500, halfWidth: 2600 },
+    { file:'idle.wav',    centerRPM:  800, halfWidth:  900 },
+    { file:'low.wav',     centerRPM: 2000, halfWidth: 1000 },
+    { file:'mid.wav',     centerRPM: 3500, halfWidth: 1100 },
+    { file:'high.wav',    centerRPM: 5500, halfWidth: 1300 },
+    { file:'redline.wav', centerRPM: 7500, halfWidth: 1500 },
   ];
 
   class SampleEngine {
