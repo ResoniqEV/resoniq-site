@@ -740,6 +740,134 @@
   }
   .hl p { font-size:13px; color:var(--tx2); line-height:1.75; }
   .hl strong { color:var(--rd); }
+
+  /* ── NAV SOCIAL ICONS ── */
+  .nav-social { display:flex; gap:4px; align-items:center; margin-left:2px; }
+  .nav-social a {
+    display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:8px; color:var(--mu);
+    text-decoration:none; transition:color .15s, background .15s;
+  }
+  .nav-social a:hover { color:#fff; background:var(--bg3); }
+  @media(max-width:760px) { .nav-social { display:none; } }
+
+  /* ── MOBILE DRAWER SOCIAL ── */
+  .drawer-social {
+    display:flex; gap:16px; padding:20px 24px 24px;
+    border-top:1px solid var(--bd);
+  }
+  .drawer-social a {
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600; color:var(--mu);
+    text-decoration:none; transition:color .15s;
+  }
+  .drawer-social a:hover { color:#fff; }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top:32px; display:flex; flex-direction:column; gap:6px; }
+  details.faq-item {
+    background:var(--bg2); border:1px solid var(--bd);
+    border-radius:14px; overflow:hidden; transition:border-color .2s;
+  }
+  details.faq-item[open] { border-color:rgba(232,41,60,.4); }
+  details.faq-item summary {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 24px; cursor:pointer; list-style:none;
+    font-size:15px; font-weight:700; color:var(--tx); gap:16px;
+    user-select:none;
+  }
+  details.faq-item summary::-webkit-details-marker { display:none; }
+  .faq-chevron {
+    width:18px; height:18px; flex-shrink:0; color:var(--mu);
+    transition:transform .25s, color .15s;
+  }
+  details.faq-item[open] .faq-chevron { transform:rotate(180deg); color:var(--rd); }
+  .faq-body {
+    padding:0 24px 20px; font-size:14px; color:var(--tx2);
+    line-height:1.8; border-top:1px solid var(--bd);
+    padding-top:16px;
+  }
+  .faq-body a { color:var(--rd); text-decoration:none; }
+  .faq-body a:hover { text-decoration:underline; }
+
+  .faq-ask {
+    margin-top:48px; background:var(--bg2); border:1px solid var(--bd);
+    border-radius:20px; padding:36px 40px;
+  }
+  @media(max-width:640px) { .faq-ask { padding:24px 20px; } }
+  .faq-ask h3 { font-size:20px; font-weight:800; margin-bottom:8px; color:#fff; }
+  .faq-ask p { font-size:14px; color:var(--tx3); margin-bottom:28px; line-height:1.6; }
+  .faq-ask-form { display:flex; flex-direction:column; gap:12px; }
+  .faq-ask-row { display:flex; gap:12px; flex-wrap:wrap; }
+  .faq-ask input {
+    flex:1; min-width:0; background:var(--bg3); border:1px solid var(--bd2);
+    border-radius:10px; padding:13px 16px; font-size:14px; color:var(--tx);
+    outline:none; transition:border-color .2s; font-family:inherit;
+  }
+  .faq-ask input:focus { border-color:var(--rd); }
+  .faq-ask input::placeholder { color:var(--mu); }
+  .faq-ask button {
+    background:var(--rd); color:#fff; border:none; border-radius:10px;
+    padding:13px 24px; font-size:14px; font-weight:700; cursor:pointer;
+    transition:background .15s; white-space:nowrap; font-family:inherit;
+  }
+  .faq-ask button:hover { background:var(--rd2); }
+  .faq-ask-success { display:none; font-size:14px; color:var(--gn); font-weight:600; margin-top:12px; }
+
+  .faq-social-row {
+    display:flex; gap:12px; margin-top:28px; flex-wrap:wrap;
+  }
+  .faq-social-btn {
+    display:flex; align-items:center; gap:9px; padding:13px 20px;
+    border-radius:12px; text-decoration:none; font-size:14px;
+    font-weight:700; transition:opacity .15s, transform .12s;
+    flex:1; justify-content:center; min-width:140px;
+  }
+  .faq-social-btn:hover { opacity:.85; transform:translateY(-1px); }
+  .faq-social-btn.insta {
+    background:linear-gradient(135deg,#e8293c 0%,#c026d3 100%); color:#fff;
+  }
+  .faq-social-btn.tiktok { background:#111; color:#fff; border:1px solid #333; }
+
+  /* ── FOOTER OVERHAUL ── */
+  footer {
+    border-top:1px solid var(--bd);
+    padding:clamp(48px,6vw,72px) clamp(20px,5vw,60px) clamp(24px,4vw,36px);
+  }
+  .foot-grid {
+    display:grid; grid-template-columns:1.4fr 1fr 1fr;
+    gap:40px 32px; margin-bottom:40px;
+  }
+  @media(max-width:700px) {
+    .foot-grid { grid-template-columns:1fr 1fr; }
+    .foot-brand { grid-column:1/-1; }
+  }
+  @media(max-width:420px) {
+    .foot-grid { grid-template-columns:1fr; }
+  }
+  .foot-logo { font-size:20px; font-weight:800; letter-spacing:-.02em; color:#fff; }
+  .foot-logo em { color:var(--rd); font-style:normal; }
+  .foot-tagline { font-size:13px; color:var(--mu); margin-top:10px; line-height:1.6; max-width:220px; }
+  .foot-col-title { font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--mu); text-transform:uppercase; margin-bottom:16px; }
+  .foot-col-links { display:flex; flex-direction:column; gap:12px; }
+  .foot-col-links a { font-size:13px; color:var(--tx3); text-decoration:none; transition:color .15s; }
+  .foot-col-links a:hover { color:#fff; }
+  .foot-social-icons { display:flex; gap:10px; margin-top:6px; }
+  .foot-social-icon {
+    display:flex; align-items:center; justify-content:center;
+    width:40px; height:40px; border-radius:10px; color:var(--mu);
+    background:var(--bg2); border:1px solid var(--bd); text-decoration:none;
+    transition:color .15s, background .15s, border-color .15s;
+  }
+  .foot-social-icon:hover { color:#fff; background:var(--bg3); border-color:var(--bd2); }
+  .foot-bottom {
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:12px; padding-top:28px; border-top:1px solid var(--bd);
+  }
+  .foot-copy { font-size:12px; color:var(--mu); }
+  .foot-legal { display:flex; gap:18px; }
+  .foot-legal a { font-size:12px; color:var(--mu); text-decoration:none; transition:color .15s; }
+  .foot-legal a:hover { color:var(--tx3); }
 </style>
 </head>
 <body>
@@ -753,7 +881,17 @@
       <a href="#sound">Sound</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#pricing">Pricing</a>
+      <a href="#faq">Help</a>
       <a href="#waitlist" class="nav-cta">Get Early Access</a>
+    </div>
+    <div class="nav-social">
+      <!-- UPDATE: replace Resoniq.ev and resoniq1 -->
+      <a href="https://instagram.com/Resoniq.ev" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://tiktok.com/@resoniq1" target="_blank" rel="noopener" aria-label="TikTok">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.81 1.54V6.8a4.85 4.85 0 0 1-1.04-.11z"/></svg>
+      </a>
     </div>
     <!-- Hamburger — mobile only -->
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">
@@ -780,7 +918,18 @@
     <a href="#sound">Sound</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#pricing">Pricing</a>
+    <a href="#faq">Help &amp; FAQ</a>
     <a href="#waitlist" class="drawer-cta">Get Early Access →</a>
+  </div>
+  <div class="drawer-social">
+    <a href="https://instagram.com/Resoniq.ev" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      Instagram
+    </a>
+    <a href="https://tiktok.com/@resoniq1" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.81 1.54V6.8a4.85 4.85 0 0 1-1.04-.11z"/></svg>
+      TikTok
+    </a>
   </div>
 </div>
 
@@ -1044,6 +1193,101 @@
 
 <hr class="div">
 
+<!-- ═══════════ MULTI-SPEAKER ═══════════ -->
+<section class="section" id="speakers">
+  <div class="eyebrow">Speaker System</div>
+  <h2>Layered audio. Real presence.</h2>
+  <p class="lead">Phase 3 expands from a single interior speaker to a full directional sound stage — inside and out.</p>
+
+  <div class="spk-diagram fade">
+    <svg viewBox="0 0 640 360" style="width:100%;max-width:640px;display:block;margin:0 auto;" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Car top-view -->
+      <path d="M230 32 Q320 12 410 32 L460 66 L470 280 L410 308 L230 308 L170 280 L180 66 Z" fill="#18181b" stroke="#3f3f46" stroke-width="1.5"/>
+      <path d="M236 68 Q320 50 404 68 L408 106 L232 106Z" fill="#172d4a" opacity=".55"/>
+      <path d="M236 252 Q320 268 404 252 L406 230 L234 230Z" fill="#172d4a" opacity=".55"/>
+      <rect x="246" y="112" width="148" height="112" rx="6" fill="#111113" stroke="#27272a" stroke-width="1"/>
+      <!-- Wheels (top view) -->
+      <rect x="165" y="92"  width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
+      <rect x="165" y="196" width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
+      <rect x="453" y="92"  width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
+      <rect x="453" y="196" width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
+
+      <!-- ① Interior/Trunk speaker — LIVE -->
+      <circle cx="320" cy="280" r="24" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
+      <text x="320" y="285" fill="#22c55e" font-size="11" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="700">SPK</text>
+      <line x1="320" y1="304" x2="320" y2="330" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="320" y="344" fill="#22c55e" font-size="10" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="600">① Interior Trunk — Live</text>
+
+      <!-- ② Rear bumper external — Phase 3 -->
+      <circle cx="320" cy="318" r="16" fill="rgba(232,41,60,0.08)" stroke="#e8293c" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="320" y="322" fill="#e8293c" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">EXT</text>
+
+      <!-- Rear bumper labels -->
+      <line x1="304" y1="318" x2="210" y2="340" stroke="#e8293c" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="200" y="344" fill="#e8293c" font-size="10" text-anchor="end" font-family="-apple-system,sans-serif" font-weight="600">② Under Rear Bumper</text>
+      <text x="200" y="356" fill="#e8293c" font-size="9" text-anchor="end" font-family="-apple-system,sans-serif" opacity=".7">Phase 3 — external exhaust sim</text>
+
+      <!-- ③ AVAS/ADAS front tap — Phase 3/4 -->
+      <circle cx="320" cy="46" r="18" fill="rgba(59,130,246,0.08)" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="320" y="51" fill="#3b82f6" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">AVAS</text>
+      <line x1="320" y1="28" x2="320" y2="16" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="320" y="11" fill="#3b82f6" font-size="10" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="600">③ ADAS / AVAS Tap</text>
+
+      <!-- ④ Door speakers — Phase 4 -->
+      <circle cx="196" cy="168" r="15" fill="rgba(168,85,247,0.08)" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="196" y="172" fill="#a855f7" font-size="8" text-anchor="middle" font-family="-apple-system,sans-serif">SPK</text>
+      <line x1="181" y1="168" x2="130" y2="168" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="125" y="164" fill="#a855f7" font-size="10" text-anchor="end" font-family="-apple-system,sans-serif" font-weight="600">④ Door Panels</text>
+      <text x="125" y="176" fill="#a855f7" font-size="9" text-anchor="end" font-family="-apple-system,sans-serif" opacity=".7">Phase 4 — stereo</text>
+
+      <circle cx="444" cy="168" r="15" fill="rgba(168,85,247,0.08)" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="444" y="172" fill="#a855f7" font-size="8" text-anchor="middle" font-family="-apple-system,sans-serif">SPK</text>
+      <line x1="459" y1="168" x2="510" y2="168" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="515" y="172" fill="#a855f7" font-size="10" font-family="-apple-system,sans-serif" font-weight="600">④ Door Panels</text>
+
+      <!-- ESP32 box -->
+      <rect x="278" y="245" width="84" height="26" rx="5" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="320" y="262" fill="#3b82f6" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">ESP32 + Amp</text>
+
+      <!-- Legend -->
+      <circle cx="30" cy="18" r="5" fill="none" stroke="#22c55e" stroke-width="2"/>
+      <text x="40" y="23" fill="#22c55e" font-size="9" font-family="-apple-system,sans-serif">Live now</text>
+      <circle cx="30" cy="36" r="5" fill="none" stroke="#e8293c" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="40" y="41" fill="#e8293c" font-size="9" font-family="-apple-system,sans-serif">Phase 3</text>
+      <circle cx="30" cy="54" r="5" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="40" y="59" fill="#3b82f6" font-size="9" font-family="-apple-system,sans-serif">Phase 3/4</text>
+      <circle cx="30" cy="72" r="5" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="40" y="77" fill="#a855f7" font-size="9" font-family="-apple-system,sans-serif">Phase 4</text>
+    </svg>
+  </div>
+
+  <div class="g3">
+    <div class="card fade">
+      <div class="ctag t-live">① Live Now</div>
+      <h3>Interior Trunk Speaker</h3>
+      <p>Single coaxial in the trunk, diffused through the rear shelf. Fills the cabin with engine character you feel in the seat. This is the core of the Resoniq experience.</p>
+    </div>
+    <div class="card fade">
+      <div class="ctag t-future">② Phase 3</div>
+      <h3>Under Rear Bumper</h3>
+      <p>A weather-sealed external speaker mounted under the rear bumper simulates an exhaust note — audible outside the car and through open windows. Crackle sounds project outward for full effect.</p>
+    </div>
+    <div class="card fade">
+      <div class="ctag t-future">③ Phase 3 / 4</div>
+      <h3>AVAS System Tap</h3>
+      <p>The Audi e-tron ships with an AVAS (Acoustic Vehicle Alerting System) speaker in the front for pedestrian warning. Resoniq can tap this channel to add front-end presence to the soundstage — no new holes drilled.</p>
+    </div>
+  </div>
+
+  <div class="hl" style="margin-top:24px;">
+    <p><strong>AVAS tap note:</strong> The e-tron's AVAS speaker is EU-mandated and active below ~20 km/h. Resoniq would take over above that speed, blending seamlessly from the pedestrian alert tone into the full engine profile. Zero new drilling — just a clean signal splice behind the front bumper liner.</p>
+  </div>
+</section>
+
+
+
+<hr class="div">
+
 <!-- ═══════════ CURRENT BUILD ═══════════ -->
 <section class="section" id="build">
   <div class="eyebrow">Current Prototype</div>
@@ -1183,100 +1427,6 @@
     </div>
   </div>
 </section>
-
-<hr class="div">
-
-<!-- ═══════════ MULTI-SPEAKER ═══════════ -->
-<section class="section" id="speakers">
-  <div class="eyebrow">Speaker System</div>
-  <h2>Layered audio. Real presence.</h2>
-  <p class="lead">Phase 3 expands from a single interior speaker to a full directional sound stage — inside and out.</p>
-
-  <div class="spk-diagram fade">
-    <svg viewBox="0 0 640 360" style="width:100%;max-width:640px;display:block;margin:0 auto;" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Car top-view -->
-      <path d="M230 32 Q320 12 410 32 L460 66 L470 280 L410 308 L230 308 L170 280 L180 66 Z" fill="#18181b" stroke="#3f3f46" stroke-width="1.5"/>
-      <path d="M236 68 Q320 50 404 68 L408 106 L232 106Z" fill="#172d4a" opacity=".55"/>
-      <path d="M236 252 Q320 268 404 252 L406 230 L234 230Z" fill="#172d4a" opacity=".55"/>
-      <rect x="246" y="112" width="148" height="112" rx="6" fill="#111113" stroke="#27272a" stroke-width="1"/>
-      <!-- Wheels (top view) -->
-      <rect x="165" y="92"  width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
-      <rect x="165" y="196" width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
-      <rect x="453" y="92"  width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
-      <rect x="453" y="196" width="22" height="44" rx="7" fill="#27272a" stroke="#52525b" stroke-width="1"/>
-
-      <!-- ① Interior/Trunk speaker — LIVE -->
-      <circle cx="320" cy="280" r="24" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
-      <text x="320" y="285" fill="#22c55e" font-size="11" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="700">SPK</text>
-      <line x1="320" y1="304" x2="320" y2="330" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="320" y="344" fill="#22c55e" font-size="10" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="600">① Interior Trunk — Live</text>
-
-      <!-- ② Rear bumper external — Phase 3 -->
-      <circle cx="320" cy="318" r="16" fill="rgba(232,41,60,0.08)" stroke="#e8293c" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="320" y="322" fill="#e8293c" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">EXT</text>
-
-      <!-- Rear bumper labels -->
-      <line x1="304" y1="318" x2="210" y2="340" stroke="#e8293c" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="200" y="344" fill="#e8293c" font-size="10" text-anchor="end" font-family="-apple-system,sans-serif" font-weight="600">② Under Rear Bumper</text>
-      <text x="200" y="356" fill="#e8293c" font-size="9" text-anchor="end" font-family="-apple-system,sans-serif" opacity=".7">Phase 3 — external exhaust sim</text>
-
-      <!-- ③ AVAS/ADAS front tap — Phase 3/4 -->
-      <circle cx="320" cy="46" r="18" fill="rgba(59,130,246,0.08)" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="320" y="51" fill="#3b82f6" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">AVAS</text>
-      <line x1="320" y1="28" x2="320" y2="16" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="320" y="11" fill="#3b82f6" font-size="10" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="600">③ ADAS / AVAS Tap</text>
-
-      <!-- ④ Door speakers — Phase 4 -->
-      <circle cx="196" cy="168" r="15" fill="rgba(168,85,247,0.08)" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3"/>
-      <text x="196" y="172" fill="#a855f7" font-size="8" text-anchor="middle" font-family="-apple-system,sans-serif">SPK</text>
-      <line x1="181" y1="168" x2="130" y2="168" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="125" y="164" fill="#a855f7" font-size="10" text-anchor="end" font-family="-apple-system,sans-serif" font-weight="600">④ Door Panels</text>
-      <text x="125" y="176" fill="#a855f7" font-size="9" text-anchor="end" font-family="-apple-system,sans-serif" opacity=".7">Phase 4 — stereo</text>
-
-      <circle cx="444" cy="168" r="15" fill="rgba(168,85,247,0.08)" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3"/>
-      <text x="444" y="172" fill="#a855f7" font-size="8" text-anchor="middle" font-family="-apple-system,sans-serif">SPK</text>
-      <line x1="459" y1="168" x2="510" y2="168" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="515" y="172" fill="#a855f7" font-size="10" font-family="-apple-system,sans-serif" font-weight="600">④ Door Panels</text>
-
-      <!-- ESP32 box -->
-      <rect x="278" y="245" width="84" height="26" rx="5" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="320" y="262" fill="#3b82f6" font-size="9" text-anchor="middle" font-family="-apple-system,sans-serif">ESP32 + Amp</text>
-
-      <!-- Legend -->
-      <circle cx="30" cy="18" r="5" fill="none" stroke="#22c55e" stroke-width="2"/>
-      <text x="40" y="23" fill="#22c55e" font-size="9" font-family="-apple-system,sans-serif">Live now</text>
-      <circle cx="30" cy="36" r="5" fill="none" stroke="#e8293c" stroke-width="1.5" stroke-dasharray="3,2"/>
-      <text x="40" y="41" fill="#e8293c" font-size="9" font-family="-apple-system,sans-serif">Phase 3</text>
-      <circle cx="30" cy="54" r="5" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,2"/>
-      <text x="40" y="59" fill="#3b82f6" font-size="9" font-family="-apple-system,sans-serif">Phase 3/4</text>
-      <circle cx="30" cy="72" r="5" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="3,2"/>
-      <text x="40" y="77" fill="#a855f7" font-size="9" font-family="-apple-system,sans-serif">Phase 4</text>
-    </svg>
-  </div>
-
-  <div class="g3">
-    <div class="card fade">
-      <div class="ctag t-live">① Live Now</div>
-      <h3>Interior Trunk Speaker</h3>
-      <p>Single coaxial in the trunk, diffused through the rear shelf. Fills the cabin with engine character you feel in the seat. This is the core of the Resoniq experience.</p>
-    </div>
-    <div class="card fade">
-      <div class="ctag t-future">② Phase 3</div>
-      <h3>Under Rear Bumper</h3>
-      <p>A weather-sealed external speaker mounted under the rear bumper simulates an exhaust note — audible outside the car and through open windows. Crackle sounds project outward for full effect.</p>
-    </div>
-    <div class="card fade">
-      <div class="ctag t-future">③ Phase 3 / 4</div>
-      <h3>AVAS System Tap</h3>
-      <p>The Audi e-tron ships with an AVAS (Acoustic Vehicle Alerting System) speaker in the front for pedestrian warning. Resoniq can tap this channel to add front-end presence to the soundstage — no new holes drilled.</p>
-    </div>
-  </div>
-
-  <div class="hl" style="margin-top:24px;">
-    <p><strong>AVAS tap note:</strong> The e-tron's AVAS speaker is EU-mandated and active below ~20 km/h. Resoniq would take over above that speed, blending seamlessly from the pedestrian alert tone into the full engine profile. Zero new drilling — just a clean signal splice behind the front bumper liner.</p>
-  </div>
-</section>
-
 <hr class="div">
 
 <!-- ═══════════ ROADMAP ═══════════ -->
@@ -1414,6 +1564,126 @@
 
 <hr class="div">
 
+<!-- ═══════════ FAQ / HELP ═══════════ -->
+<section class="section" id="faq">
+  <div class="eyebrow">Help &amp; FAQ</div>
+  <h2>Common questions.</h2>
+  <p class="lead">Everything you need to know before joining the waitlist or trying the simulator.</p>
+
+  <div class="faq-list">
+
+    <details class="faq-item">
+      <summary>
+        What vehicles does Resoniq work with?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        Any electric vehicle with an OBD2 port — which covers virtually every EV made after 2008. The current prototype runs on a real Audi e-tron and has been daily-driven and tested. Other EVs may require a short setup to map the correct OBD2 PIDs for throttle position and speed, but no hardware changes are needed.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        Will this void my car's warranty?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        No. Resoniq connects to your OBD2 port in <strong>read-only mode</strong> — it only reads throttle and speed data, it never sends any commands to your vehicle. It's legally and technically identical to plugging in a scan tool or a diagnostic app. Nothing in your car's software or hardware is modified in any way.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        How does the startup sound work?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        When you switch on your car, the Resoniq unit detects power and automatically plays the startup sound for your selected profile — an engine crank that ramps up into the running idle loop. It's seamless and triggers without any button press.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        How loud does it get? Can I control the volume?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        Completely adjustable from the app. The speaker lives in the trunk and fills the cabin through the rear shelf. Most people run it between 40–70% — present enough to feel but not overwhelming. You can also tweak bass and treble independently. Mute it in one tap if you want silence.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        What sound packs are available right now?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        Two live packs today: the <strong>Audi R8 V10</strong> (studio-recorded, 5-layer crossfade system) and <strong>Test Pack v1</strong> (the original development pack). V8 American, V10 Italia, Flat-6, and F1 Hybrid are in production. You can try both live packs in the simulator on this page — no download needed. You can also <a href="#sound">suggest a sound pack</a> and the most-requested ones get built first.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        Can I upload my own custom sound packs?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        Yes — this is already live in the prototype. The web app includes an OTA (over-the-air) upload screen where you can push your own WAV files directly to the unit over WiFi. Record an idle, low, mid, high, and redline clip, upload them, and you're running a custom pack. Full format specs will ship with the production unit.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        How do I install the hardware?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        Under 10 minutes, no tools required. Plug the Bluetooth OBD2 dongle into your OBD2 port (under the steering column), mount the Resoniq unit in your trunk, connect your phone to the <code style="color:var(--tx3);font-size:13px">etron-sound</code> WiFi network, and open the app. That's it. The production kit will include a fuse-tap cable for cleaner permanent power — no dongles, no cables hanging.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        When can I actually buy one?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="faq-body">
+        We're in active prototype phase — the system runs on a real Audi e-tron every day. Production kits are targeted for Phase 2 of the roadmap. <a href="#waitlist">Join the waitlist</a> to lock in 15% off the $379.99 launch price and get first access when units are ready.
+      </div>
+    </details>
+
+  </div>
+
+  <!-- Ask a question / follow socials -->
+  <div class="faq-ask">
+    <h3>Still have questions?</h3>
+    <p>Drop a question below and we'll answer it — or follow along on social where we post build updates, sound previews, and behind-the-scenes content.</p>
+
+    <form class="faq-ask-form" id="faq-form" onsubmit="submitQuestion(event)">
+      <input type="text" id="faq-question" placeholder="What do you want to know?" maxlength="300" required>
+      <div class="faq-ask-row">
+        <input type="email" id="faq-reply-email" placeholder="Email for a reply (optional)" style="min-width:200px;">
+        <button type="submit" id="faq-btn">Ask →</button>
+      </div>
+    </form>
+    <div class="faq-ask-success" id="faq-success">✓ Got it — we'll get back to you if you left an email.</div>
+
+    <div class="faq-social-row">
+      <!-- UPDATE: replace Resoniq.ev and resoniq1 -->
+      <a class="faq-social-btn insta" href="https://instagram.com/Resoniq.ev" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        Follow on Instagram
+      </a>
+      <a class="faq-social-btn tiktok" href="https://tiktok.com/@resoniq1" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.81 1.54V6.8a4.85 4.85 0 0 1-1.04-.11z"/></svg>
+        Follow on TikTok
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
 <!-- ═══════════ WAITLIST ═══════════ -->
 <section class="section" id="waitlist">
   <div class="waitlist fade">
@@ -1431,14 +1701,58 @@
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer>
-  <div class="foot-logo">Res<em>on</em>iq</div>
-  <div class="foot-links">
-    <a href="#how">How It Works</a>
-    <a href="#sound">Sound Packs</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#waitlist">Waitlist</a>
+  <div class="foot-grid">
+
+    <!-- Brand column -->
+    <div class="foot-brand">
+      <div class="foot-logo">Res<em>on</em>iq</div>
+      <div class="foot-tagline">Active sound for EVs. Real engine audio, synced to your throttle.</div>
+      <div class="foot-social-icons" style="margin-top:20px;">
+        <!-- UPDATE: replace Resoniq.ev and resoniq1 -->
+        <a class="foot-social-icon" href="https://instagram.com/Resoniq.ev" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a class="foot-social-icon" href="https://tiktok.com/@resoniq1" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.81 1.54V6.8a4.85 4.85 0 0 1-1.04-.11z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product links column -->
+    <div>
+      <div class="foot-col-title">Product</div>
+      <div class="foot-col-links">
+        <a href="#how">How It Works</a>
+        <a href="#speakers">Speaker System</a>
+        <a href="#sound">Sound Packs</a>
+        <a href="#build">Current Build</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+    </div>
+
+    <!-- Resources / social column -->
+    <div>
+      <div class="foot-col-title">Resources</div>
+      <div class="foot-col-links">
+        <a href="#faq">Help &amp; FAQ</a>
+        <a href="#waitlist">Join Waitlist</a>
+        <!-- UPDATE: replace handles below -->
+        <a href="https://instagram.com/Resoniq.ev" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://tiktok.com/@resoniq1" target="_blank" rel="noopener">TikTok</a>
+      </div>
+    </div>
+
   </div>
-  <div class="foot-copy">© 2026 Resoniq · Active Sound for EVs · Prototype Phase</div>
+
+  <div class="foot-bottom">
+    <div class="foot-copy">© 2026 Resoniq · Active Sound for EVs · Prototype Phase</div>
+    <div class="foot-legal">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#faq">Contact</a>
+    </div>
+  </div>
 </footer>
 
 <!-- ══ SOUND SIMULATOR OVERLAY ══ -->
@@ -1695,6 +2009,35 @@
       btn.disabled = false;
       btn.style.opacity = '1';
       btn.style.background = '#b91c2c';
+    }
+  }
+
+  // FAQ question form
+  async function submitQuestion(e) {
+    e.preventDefault();
+    const question = document.getElementById('faq-question').value.trim();
+    const email    = document.getElementById('faq-reply-email').value.trim();
+    const btn      = document.getElementById('faq-btn');
+    if (!question) return;
+    btn.textContent = 'Sending…'; btn.disabled = true; btn.style.opacity = '0.7';
+    try {
+      const res = await fetch('https://formspree.io/f/mbdedgkz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          question,
+          reply_to: email || '(no email provided)',
+          _subject: 'Resoniq Question: ' + question.slice(0, 60)
+        })
+      });
+      if (res.ok) {
+        document.getElementById('faq-form').style.display = 'none';
+        document.getElementById('faq-success').style.display = 'block';
+      } else {
+        btn.textContent = 'Try again'; btn.disabled = false; btn.style.opacity = '1';
+      }
+    } catch {
+      btn.textContent = 'Try again'; btn.disabled = false; btn.style.opacity = '1';
     }
   }
 
