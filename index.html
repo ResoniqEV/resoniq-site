@@ -1859,8 +1859,6 @@
       this.layers          = [];
 
       // Gear simulation
-      this.gear       = 1;
-      this.shiftTimer = 0;   // counts down after an upshift (RPM dip animation)
 
       this.engineOn  = false;
       this._starting = false;
@@ -2042,8 +2040,6 @@
       this.virtual_rpm = 0;
       this.sm_rate    = 1.0;
       this.using_idle = true;
-      this.gear       = 1;
-      this.shiftTimer = 0;
       if(this.ctx) {
         const t = this.ctx.currentTime;
         if(this.multiLayer) {
@@ -2083,49 +2079,9 @@
       else
         this.speedKph = Math.max(this.speedKph - ACCEL * 1.8 * dt, targetSpd);
 
-      // ── GEAR SIMULATION ──
-      // Each gear maps a speed range to 800-7800 RPM.
-      // RPM climbs through the gear, hits ~7400, upshifts, drops, climbs again.
-      // [minKph, maxKph] per gear at full throttle
-      const GEAR_BANDS = [
-        [0,  30],   // 1st
-        [20, 56],   // 2nd
-        [46, 86],   // 3rd
-        [76, 120],  // 4th
-        [108,162],  // 5th
-        [148,250],  // 6th
-      ];
-      const SHIFT_UP_RPM   = 7400;
-      const SHIFT_DOWN_RPM =  900;
-      const SHIFT_DUR      = 0.20; // seconds of RPM dip on upshift
-
-      const [gLo, gHi] = GEAR_BANDS[this.gear - 1];
-      const gRatio = Math.max(0, Math.min(1, (this.speedKph - gLo) / (gHi - gLo)));
-      let gearRPM = 800 + gRatio * 7000; // 800 → 7800 within gear
-
-      // Auto upshift
-      if(gearRPM >= SHIFT_UP_RPM && this.gear < 6 && th > 15) {
-        this.gear++;
-        this.shiftTimer = SHIFT_DUR;
-      }
-      // Auto downshift
-      if(gearRPM <= SHIFT_DOWN_RPM && this.gear > 1) {
-        this.gear--;
-        this.shiftTimer = 0;
-      }
-
-      // Shift animation: brief RPM dip (torque cut), then snap to new gear RPM
-      if(this.shiftTimer > 0) {
-        this.shiftTimer -= dt;
-        const dip = this.shiftTimer / SHIFT_DUR; // 1→0 as shift completes
-        gearRPM *= (1 - 0.55 * dip);             // dip up to 55% on shift
-      }
-
-      // At standstill with no throttle, idle at 800 RPM
-      const idleRPM = 800;
-      let target = th <= 2 && this.speedKph < 2
-        ? idleRPM
-        : Math.max(idleRPM, gearRPM);
+      // Virtual RPM — matches ESP32 firmware formula exactly
+      const sn = Math.min(this.speedKph / 100.0, 1.0) * 100.0;
+      let target = (th * 0.65 + sn * 0.35) * 80.0;
 
       // Rev hang
       if(target >= this.smooth_rpm * 0.85) {
@@ -2143,9 +2099,6 @@
         this.smooth_rpm = this.smooth_rpm * 0.20 + target * 0.80;
       this.virtual_rpm = this.smooth_rpm;
 
-      // Update gear display
-      const gearEl = document.getElementById('sim-gear-val');
-      if(gearEl) gearEl.textContent = this.gear;
 
       const rpm = this.virtual_rpm;
 
