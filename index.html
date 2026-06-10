@@ -492,6 +492,32 @@
     padding:40px; margin-bottom:24px;
   }
 
+  /* ── VEHICLES ── */
+  .vc-scroll { display:flex; gap:16px; overflow-x:auto; padding-bottom:16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .vc-scroll::-webkit-scrollbar { display:none; }
+  .vc-col { display:flex; flex-direction:column; gap:10px; min-width:180px; flex-shrink:0; }
+  .vc-col-label {
+    font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    padding:5px 10px; border-radius:6px; width:fit-content; margin-bottom:4px;
+  }
+  .vc-col-label.live    { color:var(--gn); background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25); }
+  .vc-col-label.testing { color:var(--yw); background:rgba(234,179,8,.09); border:1px solid rgba(234,179,8,.25); }
+  .vc-col-label.next    { color:var(--bl); background:rgba(59,130,246,.09); border:1px solid rgba(59,130,246,.22); }
+  .vc-col-label.deck    { color:var(--mu); background:rgba(113,113,122,.07); border:1px solid rgba(113,113,122,.2); }
+  .vc-car {
+    background:var(--bg2); border:1px solid var(--bd); border-radius:12px;
+    padding:13px 15px; transition:border-color .18s,transform .18s;
+  }
+  .vc-car:hover { border-color:var(--bd2); transform:translateY(-2px); }
+  .vc-car.is-live  { border-color:rgba(34,197,94,.3);  box-shadow:0 0 18px rgba(34,197,94,.06); }
+  .vc-car.is-test  { border-color:rgba(234,179,8,.25); }
+  .vc-car.is-next  { border-color:rgba(59,130,246,.22); }
+  .vc-car-icon { font-size:22px; margin-bottom:6px; line-height:1; }
+  .vc-car-name { font-size:13px; font-weight:700; color:var(--tx2); }
+  .vc-car-sub  { font-size:11px; color:var(--mu); margin-top:2px; line-height:1.4; }
+  .vc-divider  { width:1px; background:linear-gradient(to bottom,transparent,var(--bd) 30%,var(--bd) 70%,transparent); flex-shrink:0; margin:28px 4px 0; }
+  .vc-note { display:flex; align-items:center; gap:10px; margin-top:28px; padding:14px 18px; background:var(--bg2); border:1px solid var(--bd); border-radius:12px; font-size:13px; color:var(--tx3); }
+
   /* ── PRICING ── */
   .pricing { display:flex; gap:20px; flex-wrap:wrap; }
   .price-card {
@@ -879,6 +905,7 @@
     <div class="nav-links">
       <a href="#how">How It Works</a>
       <a href="#sound">Sound</a>
+      <a href="#vehicles">Vehicles</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">Help</a>
@@ -916,6 +943,7 @@
   <div class="nav-drawer-links">
     <a href="#how">How It Works</a>
     <a href="#sound">Sound</a>
+    <a href="#vehicles">Vehicles</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">Help &amp; FAQ</a>
@@ -1429,6 +1457,114 @@
 </section>
 <hr class="div">
 
+<!-- ═══════════ VEHICLES ═══════════ -->
+<section class="section" id="vehicles">
+  <div class="eyebrow">Compatibility</div>
+  <h2>Works with your EV</h2>
+  <p class="lead">Every modern EV has an OBD2 port — Resoniq plugs in and reads throttle + speed in real time. Here's what's running and what's rolling out next.</p>
+
+  <div class="vc-scroll fade">
+
+    <!-- ── Live ── -->
+    <div class="vc-col">
+      <div class="vc-col-label live">● Live Now</div>
+      <div class="vc-car is-live">
+        <div class="vc-car-icon">⚡</div>
+        <div class="vc-car-name">Audi e-tron</div>
+        <div class="vc-car-sub">Gen 1 &amp; 2 · All variants<br>Daily driven &amp; tested</div>
+      </div>
+    </div>
+
+    <div class="vc-divider"></div>
+
+    <!-- ── In Testing ── -->
+    <div class="vc-col" style="min-width:188px;">
+      <div class="vc-col-label testing">◑ In Testing</div>
+      <div class="vc-car is-test">
+        <div class="vc-car-icon">🔋</div>
+        <div class="vc-car-name">Tesla Model 3</div>
+        <div class="vc-car-sub">RWD · Long Range · Perf</div>
+      </div>
+      <div class="vc-car is-test">
+        <div class="vc-car-icon">🔋</div>
+        <div class="vc-car-name">Tesla Model Y</div>
+        <div class="vc-car-sub">All variants</div>
+      </div>
+      <div class="vc-car is-test">
+        <div class="vc-car-icon">🏎️</div>
+        <div class="vc-car-name">Porsche Taycan</div>
+        <div class="vc-car-sub">Taycan · 4S · Turbo</div>
+      </div>
+    </div>
+
+    <div class="vc-divider"></div>
+
+    <!-- ── Coming Up ── -->
+    <div class="vc-col" style="min-width:188px;">
+      <div class="vc-col-label next">→ Coming Up</div>
+      <div class="vc-car is-next">
+        <div class="vc-car-icon">🇩🇪</div>
+        <div class="vc-car-name">BMW i4 / iX</div>
+        <div class="vc-car-sub">eDrive35 · eDrive40 · M50</div>
+      </div>
+      <div class="vc-car is-next">
+        <div class="vc-car-icon">🇰🇷</div>
+        <div class="vc-car-name">Hyundai Ioniq 5</div>
+        <div class="vc-car-sub">Standard · Long Range · N</div>
+      </div>
+      <div class="vc-car is-next">
+        <div class="vc-car-icon">🇰🇷</div>
+        <div class="vc-car-name">Kia EV6</div>
+        <div class="vc-car-sub">RWD · AWD · GT</div>
+      </div>
+      <div class="vc-car is-next">
+        <div class="vc-car-icon">🛻</div>
+        <div class="vc-car-name">Rivian R1T / R1S</div>
+        <div class="vc-car-sub">Adventure · Performance</div>
+      </div>
+    </div>
+
+    <div class="vc-divider"></div>
+
+    <!-- ── On Deck ── -->
+    <div class="vc-col" style="min-width:188px;">
+      <div class="vc-col-label deck">◌ On Deck</div>
+      <div class="vc-car">
+        <div class="vc-car-icon">🐎</div>
+        <div class="vc-car-name">Ford Mustang Mach-E</div>
+        <div class="vc-car-sub">Select · Premium · GT</div>
+      </div>
+      <div class="vc-car">
+        <div class="vc-car-icon">🇩🇪</div>
+        <div class="vc-car-name">Volkswagen ID.4</div>
+        <div class="vc-car-sub">Pro · Pro S · GTX</div>
+      </div>
+      <div class="vc-car">
+        <div class="vc-car-icon">⚡</div>
+        <div class="vc-car-name">Chevy Blazer EV</div>
+        <div class="vc-car-sub">LT · RS · SS</div>
+      </div>
+      <div class="vc-car">
+        <div class="vc-car-icon">✨</div>
+        <div class="vc-car-name">Lucid Air</div>
+        <div class="vc-car-sub">Pure · Touring · Grand Touring</div>
+      </div>
+      <div class="vc-car">
+        <div class="vc-car-icon">🇸🇪</div>
+        <div class="vc-car-name">Polestar 2</div>
+        <div class="vc-car-sub">Single · Dual Motor</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="vc-note">
+    <span style="font-size:18px;flex-shrink:0;">🔌</span>
+    <span>Any EV with an OBD2 port can run Resoniq — the list above reflects vehicles that have been hands-on tested or are actively being validated. <a href="#waitlist" style="color:var(--rd);text-decoration:none;font-weight:600;">Let us know your car →</a></span>
+  </div>
+</section>
+<hr class="div">
+
 <!-- ═══════════ ROADMAP ═══════════ -->
 <section class="section" id="roadmap">
   <div class="eyebrow">Roadmap</div>
@@ -1725,6 +1861,7 @@
         <a href="#how">How It Works</a>
         <a href="#speakers">Speaker System</a>
         <a href="#sound">Sound Packs</a>
+        <a href="#vehicles">Vehicles</a>
         <a href="#build">Current Build</a>
         <a href="#roadmap">Roadmap</a>
         <a href="#pricing">Pricing</a>
