@@ -85,7 +85,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,12,11,.86);backdrop-fil
 
 /* ───────────────────────── Hero ───────────────────────── */
 .hero{padding:88px 0 0}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:64px;align-items:end}
+.hero-grid{display:block}
+.hero h1{max-width:11.5ch}
 .hero-status{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px}
 .hero-status .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
 .hero h1{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(56px,8.6vw,124px);line-height:.9;letter-spacing:.005em;margin:0 0 28px}
@@ -93,17 +94,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,12,11,.86);backdrop-fil
 .hero-tagline{font-size:19px;line-height:1.55;color:var(--tx-2);max-width:520px;margin:0 0 36px}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
 
-/* Hand-made: hold-to-rev tach */
-.rev{border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2);padding:24px 24px 20px}
-.rev-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.rev svg{width:100%;height:auto;display:block}
-.rev-read{display:flex;align-items:baseline;gap:8px;margin-top:-6px}
-.rev-rpm{font-family:var(--mono);font-size:40px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums;min-width:4.4ch}
-.rev-btn{margin-top:16px;width:100%;height:52px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--bg-3);color:var(--tx);font-weight:600;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .12s,border-color .12s,color .12s}
-.rev-btn.is-held{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.rev-btn kbd{font-family:var(--mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:1px 6px;opacity:.6}
-.rev-note{margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--mu)}
-.rev-note a{color:var(--tx-2);text-underline-offset:3px}
 
 /* Stats row */
 .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:72px}
@@ -179,8 +169,6 @@ code{font-family:var(--mono);font-size:.88em;background:var(--bg-3);border:1px s
 .chain-note{font-size:14px;color:var(--mu);margin:8px 0 56px}
 
 /* ── Speakers ── */
-.spk{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:start}
-.spk-diagram{position:sticky;top:96px}
 .spk-diagram{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:24px}
 .spk-list{display:flex;flex-direction:column;gap:16px}
 .spk-list .card{padding:22px 24px}
@@ -189,6 +177,40 @@ code{font-family:var(--mono);font-size:.88em;background:var(--bg-3);border:1px s
 .note .i{color:var(--accent);margin-top:2px}
 .note p{font-size:15px;color:var(--tx-2)}
 .note strong{color:var(--tx)}
+
+/* ── 3D speaker stage ── */
+.spk-stage{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2);overflow:hidden;margin-bottom:24px}
+.spk-view{position:relative;height:clamp(360px,44vw,580px);display:none;cursor:grab;touch-action:pan-y}
+.spk-view:active{cursor:grabbing}
+.spk-view canvas{display:block;width:100%!important;height:100%!important}
+.spk-fallback{padding:32px 24px}
+.spk-stage.is-ready .spk-view{display:block}
+.spk-stage.is-ready .spk-fallback{display:none}
+.spk-labels{position:absolute;inset:0;pointer-events:none}
+.hot{position:absolute;left:0;top:0;pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;color:var(--tx);will-change:transform;transition:opacity .25s}
+.hot-in{display:flex;align-items:center;gap:8px;transform:translate(-11px,calc(-100% - 14px));white-space:nowrap}
+.hot-n{width:22px;height:22px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:11px;background:rgba(12,12,11,.85);border:1px solid #8A867C;color:var(--tx);transition:transform .15s,border-color .15s}
+.hot.live .hot-n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hot.unit .hot-n{width:14px;height:14px;border-radius:3px;background:#1B1A17;border-color:var(--accent);margin-left:4px}
+.hot-tx{display:none;align-items:baseline;gap:8px;background:rgba(12,12,11,.88);border:1px solid var(--line-2);border-radius:999px;padding:4px 11px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hot-tx b{font-size:13px;font-weight:600}
+.hot-tx small{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.hot.live .hot-tx small{color:var(--accent)}
+.hot:hover .hot-tx,.hot:focus-visible .hot-tx,.hot.is-hot .hot-tx{display:flex}
+.hot:hover .hot-n,.hot.is-hot .hot-n{transform:scale(1.12);border-color:var(--accent)}
+.hot:hover,.hot.is-hot{z-index:2}
+.hot.far{opacity:.3}
+.spk-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--line)}
+.spk-legend{display:flex;gap:18px;flex-wrap:wrap}
+.spk-legend span{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu)}
+.lg-dot{width:10px;height:10px;border-radius:50%;display:block}
+.lg-dot.live{background:var(--accent)}
+.lg-dot.p3{border:1.5px solid #EEEBE4}
+.lg-dot.p34{border:1.5px solid #B9B5AB}
+.lg-dot.p4{border:1.5px dashed #8A867C}
+.lg-dot.unit{border-radius:2px;background:#26251F;border:1px solid var(--accent)}
+.spk-cards .card{transition:border-color .2s}
+.spk-cards .card.is-focus{border-color:var(--accent)}
 
 /* ── Current build ── */
 .build{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:64px;align-items:start}
@@ -471,7 +493,6 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   .nav-links,.nav-social{display:none}
   .nav-hamburger{display:grid;place-items:center}
   .hero-grid,.build,.spk,.log,.faq,.feed,.status-panel,.waitlist,.suggest{grid-template-columns:1fr}
-  .rev{max-width:520px}
   .status-nums{border-left:0;border-top:1px solid var(--line)}
   .phone{margin:0}
   .faq-ask{position:static}
@@ -480,7 +501,6 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 }
 @media (max-width:860px){
   :root{--gut:20px}
-  .rev-btn kbd{display:none}
   .section{padding:88px 0}
   .sec-head{grid-template-columns:1fr;gap:12px;margin-bottom:44px}
   .sec-index{flex-direction:row;gap:12px;padding:0}
@@ -612,20 +632,6 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
         </div>
       </div>
 
-      <!-- Hand-built: a silent hold-to-rev tach -->
-      <div class="rev" aria-label="Rev the tachometer">
-        <div class="rev-head"><span class="mono">Virtual RPM</span><span class="mono" id="rev-state">Idle</span></div>
-        <svg viewBox="0 0 320 170" aria-hidden="true">
-          <g id="rev-ticks"></g>
-          <path d="M 30 160 A 130 130 0 0 1 290 160" fill="none" stroke="#26251F" stroke-width="10"/>
-          <path id="rev-red" fill="none" stroke="#FF5A1F" stroke-width="10"/>
-          <line id="rev-needle" x1="160" y1="160" x2="160" y2="44" stroke="#EEEBE4" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="160" cy="160" r="7" fill="#EEEBE4"/>
-        </svg>
-        <div class="rev-read"><span class="rev-rpm" id="rev-rpm">900</span><span class="mono">rpm</span></div>
-        <button class="rev-btn" id="rev-btn" type="button">Hold to rev <kbd>space</kbd></button>
-        <p class="rev-note">Let go and the needle hangs for 0.3 s before it drops, which is the same rev-hang curve the box runs in the car. This one's silent. <a href="#sound" onclick="openSim('r8');return false;">Hear the R8 V10 instead</a>.</p>
-      </div>
     </div>
 
     <div class="hero-stats">
@@ -705,9 +711,13 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       </div>
     </div>
 
-    <div class="spk">
-      <div class="spk-diagram fade">
-        <svg viewBox="0 0 640 360" style="width:100%;display:block" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="Inter,-apple-system,sans-serif" role="img" aria-label="Top view of the car showing speaker positions">
+    <!-- 3D model: three.js loads when this scrolls near; the 2D diagram shows while it loads or if 3D isn't available -->
+    <div class="spk-stage fade" id="car3d">
+      <div class="spk-view" id="car3d-view" aria-label="3D model of the car showing where each speaker goes. Drag to rotate.">
+        <div class="spk-labels" id="car3d-labels"></div>
+      </div>
+      <div class="spk-fallback">
+        <svg viewBox="0 0 640 360" style="width:100%;max-width:720px;display:block;margin:0 auto" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="Inter,-apple-system,sans-serif" role="img" aria-label="Top view of the car showing speaker positions">
           <path d="M230 32 Q320 12 410 32 L460 66 L470 280 L410 308 L230 308 L170 280 L180 66 Z" fill="#201F1B" stroke="#5E5B54" stroke-width="1.5"/>
           <path d="M236 68 Q320 50 404 68 L408 106 L232 106Z" fill="#2C2B26"/>
           <path d="M236 252 Q320 268 404 252 L406 230 L234 230Z" fill="#2C2B26"/>
@@ -748,16 +758,24 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
           <circle cx="30" cy="82" r="5" stroke="#8A867C" stroke-dasharray="2,3"/><text x="42" y="86" fill="#B9B5AB" font-size="10">Phase 4</text>
         </svg>
       </div>
-
-      <div>
-        <div class="spk-list stagger">
-          <div class="card"><span class="tag live">1 · Live now</span><h3>Interior Trunk Speaker</h3><p>Single coaxial in the trunk, diffused through the rear shelf. Fills the cabin with engine character you feel in the seat. This is the core of the Resoniq experience.</p></div>
-          <div class="card"><span class="tag">2 · Phase 3</span><h3>Under Rear Bumper</h3><p>A weather-sealed external speaker mounted under the rear bumper simulates an exhaust note, audible outside the car and through open windows. Crackle sounds project outward for full effect.</p></div>
-          <div class="card"><span class="tag">3 · Phase 3 / 4</span><h3>AVAS System Tap</h3><p>The Audi e-tron ships with an AVAS (Acoustic Vehicle Alerting System) speaker in the front for pedestrian warning. Resoniq can tap this channel to add front-end presence to the soundstage, with no new holes drilled.</p></div>
+      <div class="spk-bar">
+        <div class="spk-legend">
+          <span><i class="lg-dot live"></i>Live now</span>
+          <span><i class="lg-dot p3"></i>Phase 3</span>
+          <span><i class="lg-dot p34"></i>Phase 3/4</span>
+          <span><i class="lg-dot p4"></i>Phase 4</span>
+          <span><i class="lg-dot unit"></i>Resoniq unit</span>
         </div>
-        <div class="note"><svg class="i"><use href="#i-info"/></svg><p><strong>AVAS tap note:</strong> The e-tron's AVAS speaker is EU-mandated and active below ~20 km/h. Resoniq would take over above that speed, blending seamlessly from the pedestrian alert tone into the full engine profile. Zero new drilling, just a clean signal splice behind the front bumper liner.</p></div>
+        <span class="mono spk-hint" id="car3d-hint">Loading the 3D model…</span>
       </div>
     </div>
+
+    <div class="g3 stagger spk-cards">
+      <div class="card" data-spk="1"><span class="tag live">1 · Live now</span><h3>Interior Trunk Speaker</h3><p>Single coaxial in the trunk, diffused through the rear shelf. Fills the cabin with engine character you feel in the seat. This is the core of the Resoniq experience.</p></div>
+      <div class="card" data-spk="2"><span class="tag">2 · Phase 3</span><h3>Under Rear Bumper</h3><p>A weather-sealed external speaker mounted under the rear bumper simulates an exhaust note, audible outside the car and through open windows. Crackle sounds project outward for full effect.</p></div>
+      <div class="card" data-spk="3"><span class="tag">3 · Phase 3 / 4</span><h3>AVAS System Tap</h3><p>The Audi e-tron ships with an AVAS (Acoustic Vehicle Alerting System) speaker in the front for pedestrian warning. Resoniq can tap this channel to add front-end presence to the soundstage, with no new holes drilled.</p></div>
+    </div>
+    <div class="note"><svg class="i"><use href="#i-info"/></svg><p><strong>AVAS tap note:</strong> The e-tron's AVAS speaker is EU-mandated and active below ~20 km/h. Resoniq would take over above that speed, blending seamlessly from the pedestrian alert tone into the full engine profile. Zero new drilling, just a clean signal splice behind the front bumper liner.</p></div>
   </div>
 </section>
 
@@ -2195,60 +2213,6 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSim();});
 </script>
 <script>
-/* ── Hand-built: hold-to-rev tach. Silent. Same rev-hang the firmware runs (0.30 s hold, then decay). ── */
-(function(){
-  const btn = document.getElementById('rev-btn'); if(!btn) return;
-  const needle = document.getElementById('rev-needle'), readout = document.getElementById('rev-rpm'),
-        state = document.getElementById('rev-state'), ticks = document.getElementById('rev-ticks'),
-        red = document.getElementById('rev-red');
-  const IDLE = 900, MAX = 8000, REDLINE = 7000, HANG = 300;   // ms rev-hang before the needle drops
-  const cx = 160, cy = 160, R = 130;
-  const ang = rpm => Math.PI * (1 - rpm / MAX);                // 0 rpm = left, MAX = right
-  const pt  = (rpm, r) => [cx + r * Math.cos(ang(rpm)), cy - r * Math.sin(ang(rpm))];
-  // ticks every 1000 rpm, labels in thousands
-  let t = '';
-  for(let k = 0; k <= MAX; k += 1000){
-    const [x1,y1] = pt(k, R - 14), [x2,y2] = pt(k, R - 26), [lx,ly] = pt(k, R - 42);
-    t += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${k >= REDLINE ? '#FF5A1F' : '#5E5B54'}" stroke-width="2"/>`;
-    t += `<text x="${lx}" y="${ly + 4}" fill="#8A867C" font-size="11" text-anchor="middle" font-family="JetBrains Mono,monospace">${k/1000}</text>`;
-  }
-  ticks.innerHTML = t;
-  const [rx1,ry1] = pt(REDLINE, R), [rx2,ry2] = pt(MAX, R);
-  red.setAttribute('d', `M ${rx1} ${ry1} A ${R} ${R} 0 0 1 ${rx2} ${ry2}`);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let rpm = IDLE, held = false, releasedAt = 0, last = performance.now();
-  function frame(now){
-    const dt = Math.min((now - last) / 1000, 0.05); last = now;
-    let target, rate;
-    if(held){ target = 7600; rate = 2.6; }                           // throttle open: climb
-    else if(now - releasedAt < HANG){ target = rpm; rate = 0; }      // rev hang: needle holds
-    else { target = IDLE; rate = 1.7; }                              // decay back to idle
-    rpm += (target - rpm) * (1 - Math.exp(-rate * dt));
-    let shown = rpm;
-    if(!held && !reduce && Math.abs(rpm - IDLE) < 40) shown += Math.sin(now / 90) * 12;   // idle lope
-    const [x,y] = pt(shown, R - 20);
-    needle.setAttribute('x2', x.toFixed(1)); needle.setAttribute('y2', y.toFixed(1));
-    readout.textContent = Math.round(shown / 10) * 10;
-    state.textContent = held ? (rpm > REDLINE ? 'Redline' : 'Throttle open') :
-                        (now - releasedAt < HANG ? 'Rev hang' : (rpm - IDLE > 60 ? 'Lift-off' : 'Idle'));
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-  const down = e => { if(e) e.preventDefault(); held = true; btn.classList.add('is-held'); };
-  const up   = () => { if(!held) return; held = false; releasedAt = performance.now(); btn.classList.remove('is-held'); };
-  btn.addEventListener('pointerdown', down);
-  ['pointerup','pointerleave','pointercancel'].forEach(ev => btn.addEventListener(ev, up));
-  const typing = () => /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
-  document.addEventListener('keydown', e => {
-    if(e.code !== 'Space' || e.repeat || typing()) return;
-    if(document.getElementById('sim-overlay').classList.contains('open')) return;
-    const r = btn.getBoundingClientRect(); if(r.bottom < 0 || r.top > innerHeight) return;  // only while visible
-    e.preventDefault(); down();
-  });
-  document.addEventListener('keyup', e => { if(e.code === 'Space') up(); });
-})();
-
 /* ── TikTok feed: loading → loaded, or a real fallback if it never arrives ── */
 (function(){
   const wrap = document.getElementById('tt-wrap'); if(!wrap) return;
@@ -2276,6 +2240,252 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   const io = new IntersectionObserver(es => { if(es.some(e => e.isIntersecting)){ load(); io.disconnect(); } }, { rootMargin:'600px' });
   io.observe(wrap);
 })();
+</script>
+
+<script type="module">
+/* ── 3D speaker map ──────────────────────────────────────────────────────────
+   A ghosted, e-tron-proportioned car built from extruded profiles (no model
+   file to download). Front = +X, metres. Loads three.js only when the section
+   is near the viewport; until then — or if WebGL/CDN fails — the 2D diagram
+   stays up, so the section is never blank. */
+const stage = document.getElementById('car3d');
+if (stage) {
+  const io = new IntersectionObserver(es => {
+    if (!es.some(e => e.isIntersecting)) return;
+    io.disconnect();
+    init().catch(err => {
+      console.warn('[car3d] falling back to 2D diagram', err);
+      stage.classList.add('is-fallback');
+      document.getElementById('car3d-hint').textContent = 'Showing the 2D diagram';
+    });
+  }, { rootMargin: '500px' });
+  io.observe(stage);
+}
+
+async function init() {
+  const probe = document.createElement('canvas');
+  if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) throw new Error('WebGL unavailable');
+  const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+
+  const view = document.getElementById('car3d-view');
+  const labelsEl = document.getElementById('car3d-labels');
+  const hint = document.getElementById('car3d-hint');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  stage.classList.add('is-ready');            // make the view measurable before sizing
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  view.prepend(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x131311, 10, 19);
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  const target = new THREE.Vector3(0, 0.78, 0);
+
+  scene.add(new THREE.HemisphereLight(0xeeebe4, 0x1b1a17, 1.5));
+  const key = new THREE.DirectionalLight(0xffffff, 2.8); key.position.set(4, 7, 4); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xb9b5ab, 0.7); fill.position.set(-6, 3, 5); scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xff5a1f, 0.9); rim.position.set(-5, 2.5, -5); scene.add(rim);
+
+  // ── ground: fading grid + soft contact shadow
+  const grid = new THREE.GridHelper(16, 32, 0x34332c, 0x22211d); scene.add(grid);
+  const sc = document.createElement('canvas'); sc.width = sc.height = 256;
+  const g2 = sc.getContext('2d'); const gr = g2.createRadialGradient(128,128,10,128,128,128);
+  gr.addColorStop(0,'rgba(0,0,0,0.75)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g2.fillStyle = gr; g2.fillRect(0,0,256,256);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 2.9),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.005; scene.add(shadow);
+
+  const car = new THREE.Group(); scene.add(car);
+
+  // ── body: side profile with real wheel arches, extruded across the width
+  const body = new THREE.Shape();
+  body.moveTo(-2.40, 0.30);
+  body.lineTo(-1.93, 0.30);
+  body.absarc(-1.47, 0.40, 0.47, Math.PI + 0.21, -0.21, true);   // rear arch
+  body.lineTo(1.00, 0.30);
+  body.absarc(1.46, 0.40, 0.47, Math.PI + 0.21, -0.21, true);    // front arch
+  body.lineTo(2.36, 0.30);
+  body.quadraticCurveTo(2.50, 0.34, 2.50, 0.56);                 // front bumper
+  body.quadraticCurveTo(2.50, 0.80, 2.22, 0.88);                 // nose
+  body.lineTo(1.30, 1.00);                                       // hood → cowl
+  body.lineTo(-2.10, 1.06);                                      // beltline
+  body.quadraticCurveTo(-2.40, 1.04, -2.46, 0.90);               // tailgate
+  body.lineTo(-2.48, 0.55);
+  body.quadraticCurveTo(-2.48, 0.32, -2.40, 0.30);
+  const bodyGeo = new THREE.ExtrudeGeometry(body, { depth: 1.80, curveSegments: 28,
+    bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.06, bevelSegments: 4 });
+  bodyGeo.translate(0, 0, -0.90);
+  const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0x9a978f, metalness: 0.35, roughness: 0.28,
+    clearcoat: 1, clearcoatRoughness: 0.15, transparent: true, opacity: 0.46, depthWrite: false, side: THREE.DoubleSide });
+  const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat); bodyMesh.renderOrder = 3; car.add(bodyMesh);
+  car.add(new THREE.LineSegments(new THREE.EdgesGeometry(bodyGeo, 28),
+    new THREE.LineBasicMaterial({ color: 0xd9d5cb, transparent: true, opacity: 0.75 })));
+
+  // ── glasshouse: narrower than the body (tumblehome)
+  const gh = new THREE.Shape();
+  gh.moveTo(1.28, 1.00);
+  gh.quadraticCurveTo(0.80, 1.30, 0.30, 1.50);                   // windshield
+  gh.lineTo(-1.55, 1.56);                                        // roof
+  gh.quadraticCurveTo(-1.95, 1.54, -2.12, 1.30);                 // D-pillar
+  gh.lineTo(-2.20, 1.07);
+  gh.lineTo(1.28, 1.00);
+  const ghGeo = new THREE.ExtrudeGeometry(gh, { depth: 1.44, curveSegments: 24,
+    bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 3 });
+  ghGeo.translate(0, 0, -0.72);
+  const glass = new THREE.Mesh(ghGeo, new THREE.MeshPhysicalMaterial({ color: 0x3a4148, metalness: 0.2,
+    roughness: 0.08, clearcoat: 1, transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide }));
+  glass.renderOrder = 2; car.add(glass);
+  car.add(new THREE.LineSegments(new THREE.EdgesGeometry(ghGeo, 28),
+    new THREE.LineBasicMaterial({ color: 0xd9d5cb, transparent: true, opacity: 0.6 })));
+  // B-pillars
+  const pillarMat = new THREE.MeshStandardMaterial({ color: 0x0c0c0b, roughness: 0.6 });
+  for (const z of [0.76, -0.76]) {
+    const pl = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.50, 0.03), pillarMat);
+    pl.position.set(-0.32, 1.30, z); car.add(pl);
+  }
+
+  // ── wheels
+  const tireMat = new THREE.MeshStandardMaterial({ color: 0x141413, roughness: 0.9 });
+  const rimMat = new THREE.MeshStandardMaterial({ color: 0x9a968c, metalness: 0.85, roughness: 0.3 });
+  for (const x of [1.46, -1.47]) for (const z of [0.83, -0.83]) {
+    const w = new THREE.Group();
+    const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.37, 0.37, 0.26, 48), tireMat);
+    const rimM = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.272, 32), rimMat);
+    tire.rotation.x = rimM.rotation.x = Math.PI / 2;
+    w.add(tire, rimM); w.position.set(x, 0.37, z); car.add(w);
+  }
+
+  // ── the e-tron's full-width light bars
+  const bar = (w, color, x, y) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.035, w),
+    new THREE.MeshBasicMaterial({ color })); m.position.set(x, y, 0); car.add(m); };
+  bar(1.50, 0xeeebe4, 2.43, 0.78);
+  bar(1.74, 0xb8401c, -2.47, 0.88);
+
+  // ── speakers + the unit, at their real positions
+  const MARKERS = [
+    { k: '1', name: 'Interior trunk', phase: 'Live', pos: [-1.85, 0.80, 0], live: true },
+    { k: '2', name: 'Under rear bumper', phase: 'Phase 3', pos: [-2.44, 0.30, 0], color: 0xeeebe4 },
+    { k: '3', name: 'AVAS tap', phase: 'Phase 3/4', pos: [2.42, 0.58, 0], color: 0xb9b5ab },
+    { k: '4', name: 'Door panel', phase: 'Phase 4', pos: [0.70, 0.72, 0.86], color: 0x8a867c },
+    { k: '4', name: 'Door panel', phase: 'Phase 4', pos: [0.70, 0.72, -0.86], color: 0x8a867c },
+    { k: 'u', name: 'Resoniq unit', phase: '', pos: [-1.98, 0.50, 0.46], unit: true },
+  ];
+  const ringGeo = new THREE.RingGeometry(0.115, 0.135, 48);
+  const waves = [];
+  const marks = MARKERS.map(m => {
+    const p = new THREE.Vector3(...m.pos);
+    const grp = new THREE.Group(); grp.position.copy(p); car.add(grp);
+    if (m.unit) {
+      const box = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.13, 0.26),
+        new THREE.MeshStandardMaterial({ color: 0x1b1a17, roughness: 0.5 }));
+      grp.add(box);
+      grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineBasicMaterial({ color: 0xff5a1f })));
+    } else {
+      const col = m.live ? 0xff5a1f : m.color;
+      grp.add(new THREE.Mesh(new THREE.SphereGeometry(m.live ? 0.1 : 0.07, 24, 16), new THREE.MeshBasicMaterial({ color: col })));
+      const halo = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: col, transparent: true,
+        opacity: m.live ? 0.9 : 0.6, side: THREE.DoubleSide, depthWrite: false }));
+      halo.renderOrder = 5; grp.add(halo); grp.userData.halo = halo;
+      if (m.live) for (let i = 0; i < 3; i++) {           // sound waves leaving the live speaker
+        const w = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xff5a1f, transparent: true,
+          opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+        w.renderOrder = 5; grp.add(w); waves.push({ mesh: w, offset: i / 3 });
+      }
+    }
+    // HTML label
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'hot' + (m.live ? ' live' : '') + (m.unit ? ' unit' : '');
+    el.innerHTML = `<span class="hot-in"><span class="hot-n">${m.unit ? '' : m.k}</span><span class="hot-tx"><b>${m.name}</b>${m.phase ? `<small>${m.phase}</small>` : ''}</span></span>`;
+    el.setAttribute('aria-label', `${m.name}${m.phase ? ', ' + m.phase : ''}`);
+    labelsEl.appendChild(el);
+    const mk = { ...m, p, grp, el };
+    el.addEventListener('click', () => focus(mk));
+    return mk;
+  });
+
+  // ── camera orbit (drag), auto-rotate when idle
+  let yaw = 2.45, pitch = 0.36, targetYaw = null, lastInteract = -1e9;
+  let dragging = false, px = 0, py = 0;
+  const cv = renderer.domElement;
+  cv.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; lastInteract = performance.now(); targetYaw = null; });
+  addEventListener('pointermove', e => {
+    if (!dragging) return;
+    yaw += (e.clientX - px) * 0.008;
+    pitch = Math.min(0.75, Math.max(0.06, pitch + (e.clientY - py) * 0.005));
+    px = e.clientX; py = e.clientY; lastInteract = performance.now();
+  });
+  addEventListener('pointerup', () => { dragging = false; });
+
+  const cards = [...document.querySelectorAll('.spk-cards [data-spk]')];
+  function focus(m) {
+    targetYaw = Math.atan2(m.p.z, m.p.x) + 0.55;       // swing to a 3/4 view of that speaker
+    lastInteract = performance.now() + 3000;
+    cards.forEach(c => c.classList.toggle('is-focus', c.dataset.spk === m.k));
+    marks.forEach(o => o.el.classList.toggle('is-hot', o.k === m.k));
+  }
+  cards.forEach(c => {
+    c.addEventListener('mouseenter', () => marks.forEach(o => o.el.classList.toggle('is-hot', o.k === c.dataset.spk)));
+    c.addEventListener('mouseleave', () => marks.forEach(o => o.el.classList.remove('is-hot')));
+  });
+
+  // ── sizing + render loop (only while visible)
+  function resize() {
+    const w = view.clientWidth, h = view.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(view); resize();
+
+  let running = true;
+  new IntersectionObserver(es => { running = es[0].isIntersecting; if (running) loop(performance.now()); }).observe(stage);
+
+  const camDir = new THREE.Vector3(), wp = new THREE.Vector3(), tmp = new THREE.Vector3();
+  let last = performance.now();
+  function loop(now) {
+    if (!running) return;
+    const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    if (targetYaw !== null) {
+      const d = Math.atan2(Math.sin(targetYaw - yaw), Math.cos(targetYaw - yaw));
+      yaw += d * (1 - Math.exp(-5 * dt));
+      if (Math.abs(d) < 0.002) targetYaw = null;
+    } else if (!reduce && !dragging && now - lastInteract > 3500) {
+      yaw += dt * 0.16;
+    }
+    const r = Math.min(13, Math.max(7.6, (camera.aspect < 1.2 ? 3.2 : 3.9) / (Math.tan(THREE.MathUtils.degToRad(15)) * camera.aspect)));
+    camera.position.set(target.x + r * Math.cos(pitch) * Math.cos(yaw), target.y + r * Math.sin(pitch),
+                        target.z + r * Math.cos(pitch) * Math.sin(yaw));
+    camera.lookAt(target);
+
+    // halos + waves always face the camera
+    marks.forEach(m => { if (m.grp.userData.halo) m.grp.userData.halo.quaternion.copy(camera.quaternion); });
+    waves.forEach(w => {
+      w.mesh.quaternion.copy(camera.quaternion);
+      const t = reduce ? 0.35 + w.offset * 0.3 : ((now / 1600) + w.offset) % 1;
+      const s = 1 + t * 5.5; w.mesh.scale.set(s, s, s);
+      w.mesh.material.opacity = (1 - t) * 0.55;
+    });
+
+    renderer.render(scene, camera);
+
+    // project labels; dim the ones on the far side of the car
+    camDir.copy(camera.position).sub(target).normalize();
+    const w = view.clientWidth, h = view.clientHeight;
+    marks.forEach(m => {
+      m.grp.getWorldPosition(wp);
+      tmp.copy(wp).project(camera);
+      m.el.style.transform = `translate(${((tmp.x + 1) / 2 * w).toFixed(1)}px,${((1 - tmp.y) / 2 * h).toFixed(1)}px)`;
+      m.el.classList.toggle('far', tmp.copy(wp).sub(target).dot(camDir) < -0.35);
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  hint.textContent = reduce ? 'Drag to look around' : 'Drag to look around · tap a label';
+}
 </script>
 
 </body>
