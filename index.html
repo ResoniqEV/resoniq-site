@@ -499,6 +499,32 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 .sim-error .i{color:var(--accent)}
 
 /* ───────────────────────── Responsive ───────────────────────── */
+/* Resoniq Engine Synth (sound section) */
+.syn-player{position:sticky;top:72px;z-index:20;background:rgba(19,19,17,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line-2);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.syn-prow{display:flex;align-items:center;gap:14px;min-width:0}
+.syn-pbtn{flex:none;width:46px;height:46px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;cursor:pointer}
+.syn-pbtn:disabled{background:var(--bg-3);color:var(--mu-2);cursor:default}
+.syn-pbtn .i{width:18px;height:18px;fill:currentColor;stroke:none}
+.syn-pinfo{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.syn-pinfo .mono{font-size:11px}
+.syn-pname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.syn-ptime{flex:none;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.syn-pmode{color:var(--accent)}
+.syn-strip{position:relative;display:flex;height:32px;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;background:var(--bg)}
+.syn-seg{border-right:1px solid var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);background:var(--bg-3);white-space:nowrap;overflow:hidden;min-width:0;transition:color .15s,background .15s}
+.syn-seg span{overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+.syn-seg.on{color:var(--accent-ink);background:var(--accent)}
+.syn-head{position:absolute;top:0;bottom:0;width:2px;background:var(--tx);left:0;pointer-events:none}
+.syn-note{font-size:13px;color:var(--mu);margin:0}
+.syn-card .prof-top .mono{font-size:11px}
+.syn-card.playing{border-color:var(--accent)}
+.syn-card .syn-eng{font-size:14px;color:var(--tx-2)}
+.syn-card .syn-tag{font-size:14px;color:var(--tx);margin-top:6px}
+.syn-fp{display:block;width:100%;height:40px;margin-top:14px}
+.syn-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--mu)}
+.syn-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:-1px}
+@media (max-width:560px){.syn-seg span{display:none}.syn-player{top:68px;padding:14px}}
+
 @media (max-width:1080px){
   .nav-links,.nav-social{display:none}
   .nav-hamburger{display:grid;place-items:center}
@@ -568,6 +594,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></symbol>
+  <symbol id="i-pause-syn" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></symbol>
   <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></symbol>
@@ -933,56 +960,39 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 <section class="section" id="sound">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-index"><b>05</b><span class="mono">Sound library</span></div>
+      <div class="sec-index"><b>05</b><span class="mono">Sound development</span></div>
       <div>
-        <h2>Choose your engine</h2>
-        <p class="lead">Each profile is a set of studio-recorded WAV loops, idle through redline, crossfaded in real time to match your driving.</p>
+        <h2>Resoniq Engine Synth</h2>
+        <p class="lead">Every engine here is generated live from its <strong>real firing order, exhaust layout and induction</strong>, using the same code that runs on the box. Each clip is one drive through every mode: idle, blips, the rev limiter, a lift with pops, a pull through the gears, overrun, cruise and shut-off.</p>
       </div>
     </div>
 
-    <div class="callout"><svg class="i"><use href="#i-info"/></svg><div><b>New: the Audi R8 V10 pack is live. Studio recorded, real engine audio.</b><p>The V8 and V10 are early sound previews still being refined. Flat-6 and F1 are synth placeholders. For the best experience, try the Audi R8 V10 pack.</p></div></div>
+    <div class="callout"><svg class="i"><use href="#i-info"/></svg><div><b>Development sounds. More engines are coming soon.</b><p>These are synthesized models of each engine, still being tuned, not recordings. Car names describe the engine each sound is modeled on; Resoniq isn't affiliated with these manufacturers.</p></div></div>
 
-    <div class="profiles fade">
-      <button class="prof live-prof is-new" type="button" onclick="openSim('r8')">
-        <span class="prof-top"><span class="tag live">Live</span></span>
-        <span class="prof-name">Audi R8 V10</span><span class="prof-sub">Studio recorded</span>
-        <span class="prof-try"><svg class="i i-sm"><use href="#i-play"/></svg>Play it</span>
-      </button>
-      <button class="prof live-prof" type="button" onclick="openSim('test')">
-        <span class="prof-top"><span class="tag live">Live</span></span>
-        <span class="prof-name">Test Pack v1</span><span class="prof-sub">Current prototype</span>
-        <span class="prof-try"><svg class="i i-sm"><use href="#i-play"/></svg>Play it</span>
-      </button>
-      <button class="prof" type="button" onclick="openSim('v8')">
-        <span class="prof-top"><span class="tag">Early preview</span></span>
-        <span class="prof-name">V8 American</span><span class="prof-sub">LS3 / 5.0 Coyote</span>
-        <span class="prof-try"><svg class="i i-sm"><use href="#i-play"/></svg>Preview</span>
-      </button>
-      <button class="prof" type="button" onclick="openSim('v10')">
-        <span class="prof-top"><span class="tag">Early preview</span></span>
-        <span class="prof-name">V10 Italia</span><span class="prof-sub">Lamborghini LP640</span>
-        <span class="prof-try"><svg class="i i-sm"><use href="#i-play"/></svg>Preview</span>
-      </button>
-      <div class="prof locked" aria-disabled="true">
-        <span class="prof-top"><span class="tag">Coming soon</span><svg class="i i-sm" style="color:var(--mu)"><use href="#i-lock"/></svg></span>
-        <span class="prof-name">Flat-6</span><span class="prof-sub">Porsche 911 GT3</span>
-        <span class="prof-try">Still in the studio</span>
+    <div class="syn-player" id="syn-player">
+      <div class="syn-prow">
+        <button class="syn-pbtn" id="syn-pbtn" type="button" aria-label="Play" disabled><svg class="i" viewBox="0 0 24 24"><use href="#i-play" id="syn-picon"/></svg></button>
+        <div class="syn-pinfo">
+          <span class="mono" id="syn-pkick">Pick an engine below</span>
+          <span class="syn-pname" id="syn-pname">Nothing playing</span>
+        </div>
+        <span class="syn-ptime mono"><span class="syn-pmode" id="syn-pmode"></span><span id="syn-ptime">0.0 s</span></span>
       </div>
-      <div class="prof locked" aria-disabled="true">
-        <span class="prof-top"><span class="tag">Coming soon</span><svg class="i i-sm" style="color:var(--mu)"><use href="#i-lock"/></svg></span>
-        <span class="prof-name">F1 Hybrid</span><span class="prof-sub">Mercedes PU106</span>
-        <span class="prof-try">Still in the studio</span>
-      </div>
+      <div class="syn-strip" id="syn-strip" role="slider" tabindex="0" aria-label="Position in the drive" aria-valuemin="0" aria-valuemax="25.5" aria-valuenow="0"></div>
+      <p class="syn-note">Tap a mode to jump to it. Pops come only when you lift after a hard pull.</p>
     </div>
+
+    <div class="profiles syn-grid fade" id="syn-grid"></div>
+    <div class="syn-legend"><span><i style="background:var(--tx-2)"></i>Engine orders: the even firing pulses</span><span><i style="background:var(--accent)"></i>Half orders: uneven pulses (burble, warble, rumble)</span></div>
 
     <div class="suggest">
       <div>
-        <h3><svg class="i" style="color:var(--accent)"><use href="#i-wave"/></svg>Suggest a sound pack</h3>
-        <p>Got an engine you want to hear in your EV? Every suggestion gets read, and the most-requested ones get built first.</p>
+        <h3><svg class="i" style="color:var(--accent)"><use href="#i-wave"/></svg>New engines are coming soon</h3>
+        <p>Tell us what you want to hear next. Every suggestion gets read, and the most-requested engines get built first.</p>
       </div>
       <div>
         <form id="suggest-form" class="field-row" onsubmit="submitSuggestion(event)">
-          <input id="suggest-input" class="field" type="text" placeholder="Ferrari 458, BMW M3 E46, Viper V10…" maxlength="120" required aria-label="Engine you'd like to hear">
+          <input id="suggest-input" class="field" type="text" placeholder="Ferrari 458, Lexus LFA, Nissan GT-R…" maxlength="120" required aria-label="Engine you'd like to hear">
           <button type="submit" id="suggest-btn" class="btn btn-primary">Send it</button>
         </form>
         <div id="suggest-success" class="ok-msg"><svg class="i"><use href="#i-check"/></svg>Got it. The most-asked-for engines get built first.</div>
@@ -1171,8 +1181,8 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
           <div class="faq-body">When you switch on your car, the Resoniq unit detects power and automatically plays the startup sound for your selected profile: an engine crank that ramps up into the running idle loop. It's seamless and triggers without any button press.</div></details>
         <details class="faq-item"><summary>How loud does it get? Can I control the volume?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
           <div class="faq-body">Completely adjustable from the app. The speaker lives in the trunk and fills the cabin through the rear shelf. Most people run it between 40–70%, present enough to feel but not overwhelming. You can also tweak bass and treble independently, and mute it in one tap if you want silence.</div></details>
-        <details class="faq-item"><summary>What sound packs are available right now?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">Two live packs today: the <strong>Audi R8 V10</strong> (studio-recorded, 5-layer crossfade system) and <strong>Test Pack v1</strong> (the original development pack). V8 American, V10 Italia, Flat-6, and F1 Hybrid are in production. You can try both live packs in the simulator on this page, no download needed. You can also <a href="#sound">suggest a sound pack</a>, and the most-requested ones get built first.</div></details>
+        <details class="faq-item"><summary>What engine sounds are available right now?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
+          <div class="faq-body">Nine engines from the <a href="#sound">Resoniq Engine Synth</a>: BMW M3 (E92), M5 (E60) and M4 (G82), Audi RS3, Porsche 911 GT3 (992), Alfa Romeo Giulia Quadrifoglio, Chevrolet Corvette Z06 (C6), Dodge Challenger Hellcat and Toyota Supra (MK4). Each is generated live from the engine's firing order and exhaust, so it follows your revs exactly. They're development sounds still being tuned, and more are coming soon. You can also <a href="#sound">suggest an engine</a>, and the most-requested ones get built first.</div></details>
         <details class="faq-item"><summary>Can I upload my own custom sound packs?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
           <div class="faq-body">Yes, this is already live in the prototype. The web app includes an OTA (over-the-air) upload screen where you can push your own WAV files directly to the unit over WiFi. Record an idle, low, mid, high, and redline clip, upload them, and you're running a custom pack. Full format specs will ship with the production unit.</div></details>
         <details class="faq-item"><summary>How do I install the hardware?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
@@ -2252,6 +2262,100 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 })();
 </script>
 
+<script>
+/* ── Resoniq Engine Synth player ── */
+(function(){
+  const CARS = [{"n": "BMW M3 (E92)", "e": "S65 4.0L V8 NA", "r": "Germany", "f": "V8", "red": 8400, "idle": 800, "t": "A V8 that revs like a race engine", "fp": [-36, -36, -7, -28, -10, -34, -25, 0, -25, -36, -2, -28, -15, -28, -22, -4], "src": "sounds/synth/bmw-m3-e92.mp3", "boost": false}, {"n": "BMW M5 (E60)", "e": "S85 5.0L V10 NA", "r": "Germany", "f": "V10", "red": 8250, "idle": 800, "t": "The Formula 1 era, in a saloon", "fp": [-36, -36, -34, -28, -2, -22, -28, -32, -27, 0, -33, -32, -28, -22, -2, -20], "src": "sounds/synth/bmw-m5-e60.mp3", "boost": false}, {"n": "BMW M4 (G82)", "e": "S58 3.0L I6 Twin-Turbo", "r": "Germany", "f": "I6", "red": 7200, "idle": 750, "t": "Straight-six, two turbos, lots of crackle", "fp": [-36, -36, -36, -36, -33, 0, -36, -36, -27, -36, -36, -14, -36, -36, -18, -36], "src": "sounds/synth/bmw-m4-g82.mp3", "boost": true}, {"n": "Audi RS3", "e": "2.5L TFSI I5 Turbo", "r": "Germany", "f": "I5", "red": 7000, "idle": 800, "t": "The five-cylinder warble", "fp": [-36, -36, -35, -29, 0, -36, -36, -36, -36, -13, -36, -35, -36, -36, -19, -36], "src": "sounds/synth/audi-rs3.mp3", "boost": true}, {"n": "Porsche 911 GT3 (992)", "e": "4.0L Flat-6 NA", "r": "Germany", "f": "Flat-6", "red": 9000, "idle": 850, "t": "Flat-six to 9,000 rpm", "fp": [-36, -36, -35, -36, -36, 0, -36, -36, -24, -36, -36, -11, -36, -36, -10, -36], "src": "sounds/synth/porsche-911-gt3-992.mp3", "boost": false}, {"n": "Alfa Romeo Giulia Quadrifoglio", "e": "2.9L V6 Biturbo", "r": "Italy", "f": "V6", "red": 7000, "idle": 800, "t": "A Ferrari-derived V6 in a saloon", "fp": [-36, -36, -32, -33, -36, 0, -36, -32, -22, -36, -36, -13, -36, -30, -11, -32], "src": "sounds/synth/alfa-romeo-giulia-quadrifoglio.mp3", "boost": true}, {"n": "Chevrolet Corvette Z06 (C6)", "e": "LS7 7.0L V8 NA", "r": "USA", "f": "V8", "red": 7100, "idle": 700, "t": "Seven litres of pushrod V8", "fp": [-36, -32, -2, -21, -4, -24, -21, 0, -16, -24, -2, -35, -13, -28, -23, -8], "src": "sounds/synth/chevrolet-corvette-z06-c6.mp3", "boost": false}, {"n": "Dodge Challenger Hellcat", "e": "6.2L Supercharged Hemi V8", "r": "USA", "f": "V8", "red": 6200, "idle": 750, "t": "Supercharger whine over Hemi thunder", "fp": [-36, -34, -1, -16, -3, -34, -18, 0, -14, -28, -2, -28, -13, -24, -25, -8], "src": "sounds/synth/dodge-challenger-hellcat.mp3", "boost": false}, {"n": "Toyota Supra (MK4)", "e": "2JZ-GTE 3.0L I6 Twin-Turbo", "r": "Japan", "f": "I6", "red": 7000, "idle": 800, "t": "The 2JZ", "fp": [-36, -36, -34, -36, -36, 0, -35, -36, -24, -36, -36, -13, -36, -34, -12, -36], "src": "sounds/synth/toyota-supra-mk4.mp3", "boost": true}];
+  const PHASES = [[0,4.0,"Idle"],[4.0,7.0,"Blips"],[7.0,8.9,"Limiter"],[8.9,11.0,"Lift + pops"],[11.0,17.5,"Pull through gears"],[17.5,19.5,"Overrun"],[19.5,21.5,"Cruise"],[21.5,24.0,"Coast"],[24.0,25.5,"Off"]];
+  const TOTAL = 25.5;
+  const grid = document.getElementById('syn-grid'); if(!grid) return;
+  const strip = document.getElementById('syn-strip');
+  const audio = new Audio(); audio.preload = 'none';
+  const PLAY = '#i-play';
+  let cur = -1;
+
+  PHASES.forEach(([a,b,n]) => {
+    const d = document.createElement('div');
+    d.className = 'syn-seg'; d.style.flex = (b - a) + ' 1 0'; d.title = n;
+    d.innerHTML = '<span>' + n + '</span>';
+    d.addEventListener('click', e => { e.stopPropagation(); seek(a + 0.01); });
+    strip.appendChild(d);
+  });
+  const head = document.createElement('div'); head.className = 'syn-head'; strip.appendChild(head);
+  const segs = [...strip.querySelectorAll('.syn-seg')];
+
+  function fp(v){
+    const W = 160, H = 40, bw = W / v.length;
+    let s = '<svg class="syn-fp" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">';
+    v.forEach((db, i) => {
+      const h = Math.max(1.5, (db + 36) / 36 * (H - 2));
+      s += '<rect x="' + (i * bw + 1.2).toFixed(1) + '" y="' + (H - h).toFixed(1) + '" width="' + (bw - 2.4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="1" fill="' + (i % 2 === 0 ? 'var(--accent)' : 'var(--tx-2)') + '"/>';
+    });
+    return s + '</svg>';
+  }
+
+  CARS.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'prof syn-card'; b.dataset.i = i;
+    b.setAttribute('aria-label', 'Play ' + c.n);
+    b.innerHTML =
+      '<span class="prof-top"><span class="tag">' + c.r + '</span><span class="mono">' + c.f + ' · ' + c.red.toLocaleString('en-US') + ' rpm</span></span>' +
+      '<span class="prof-name">' + c.n + '</span>' +
+      '<span class="syn-eng">' + c.e + '</span>' +
+      '<span class="syn-tag">' + c.t + '</span>' +
+      fp(c.fp) +
+      '<span class="prof-try"><svg class="i i-sm"><use href="#i-play"/></svg><span class="syn-try">Play it</span></span>';
+    b.addEventListener('click', () => choose(i));
+    grid.appendChild(b);
+  });
+
+  function refresh(){
+    const playing = !audio.paused;
+    document.getElementById('syn-pbtn').setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    document.getElementById('syn-picon').setAttribute('href', playing ? '#i-pause-syn' : PLAY);
+    grid.querySelectorAll('.syn-card').forEach(el => {
+      const on = +el.dataset.i === cur && playing;
+      el.classList.toggle('playing', on);
+      el.querySelector('.syn-try').textContent = on ? 'Playing' : (+el.dataset.i === cur ? 'Resume' : 'Play it');
+    });
+  }
+  function choose(i){
+    if (i === cur) { audio.paused ? audio.play().catch(()=>{}) : audio.pause(); return; }
+    cur = i; const c = CARS[i];
+    audio.src = c.src; audio.play().catch(()=>{});
+    document.getElementById('syn-pbtn').disabled = false;
+    document.getElementById('syn-pkick').textContent = c.r + ' · ' + c.e;
+    document.getElementById('syn-pname').textContent = c.n;
+  }
+  function seek(t){
+    if (cur < 0) choose(0);
+    const go = () => { audio.currentTime = Math.min(t, TOTAL - 0.05); audio.play().catch(()=>{}); };
+    audio.readyState >= 1 ? go() : audio.addEventListener('loadedmetadata', go, {once:true});
+  }
+  function tick(){
+    const t = audio.currentTime || 0;
+    head.style.left = (t / TOTAL * 100) + '%';
+    document.getElementById('syn-ptime').textContent = t.toFixed(1) + ' s';
+    strip.setAttribute('aria-valuenow', t.toFixed(1));
+    let mode = '';
+    segs.forEach((s, k) => {
+      const on = cur >= 0 && t >= PHASES[k][0] && t < PHASES[k][1];
+      s.classList.toggle('on', on);
+      if (on) mode = PHASES[k][2];
+    });
+    document.getElementById('syn-pmode').textContent = mode;
+  }
+  document.getElementById('syn-pbtn').addEventListener('click', () => { if (cur >= 0) audio.paused ? audio.play().catch(()=>{}) : audio.pause(); });
+  strip.addEventListener('click', e => { const r = strip.getBoundingClientRect(); seek((e.clientX - r.left) / r.width * TOTAL); });
+  strip.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { seek((audio.currentTime || 0) + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft')  { seek(Math.max(0, (audio.currentTime || 0) - 1)); e.preventDefault(); }
+  });
+  ['play','pause','ended'].forEach(ev => audio.addEventListener(ev, refresh));
+  audio.addEventListener('timeupdate', tick);
+  tick();
+})();
+</script>
 <script type="module">
 /* ── 3D speaker map ──────────────────────────────────────────────────────────
    A ghosted, e-tron-proportioned car built from extruded profiles (no model
