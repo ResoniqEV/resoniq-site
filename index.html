@@ -516,6 +516,15 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 .syn-seg.on{color:var(--accent-ink);background:var(--accent)}
 .syn-head{position:absolute;top:0;bottom:0;width:2px;background:var(--tx);left:0;pointer-events:none}
 .syn-note{font-size:13px;color:var(--mu);margin:0}
+.syn-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.syn-switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;flex:none}
+.syn-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.syn-track{position:relative;width:42px;height:24px;border-radius:999px;background:var(--bg-3);border:1px solid var(--line-2);transition:background .15s,border-color .15s}
+.syn-track::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--mu);transition:transform .15s,background .15s}
+.syn-switch input:checked + .syn-track{background:var(--accent);border-color:var(--accent)}
+.syn-switch input:checked + .syn-track::after{transform:translateX(18px);background:var(--accent-ink)}
+.syn-switch input:focus-visible + .syn-track{outline:2px solid var(--accent);outline-offset:3px}
+.syn-switch-label{font-size:14px;font-weight:600}
 .syn-card .prof-top .mono{font-size:11px}
 .syn-card.playing{border-color:var(--accent)}
 .syn-card .syn-eng{font-size:14px;color:var(--tx-2)}
@@ -963,7 +972,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div class="sec-index"><b>05</b><span class="mono">Sound development</span></div>
       <div>
         <h2>Resoniq Engine Synth</h2>
-        <p class="lead">Every engine here is generated live from its <strong>real firing order, exhaust layout and induction</strong>, using the same code that runs on the box. Each clip is one drive through every mode: idle, blips, the rev limiter, a lift with pops, a pull through the gears, overrun, cruise and shut-off.</p>
+        <p class="lead">Every engine here is generated live from its <strong>real firing order, exhaust layout and induction</strong>, using the same code that runs on the box. Each clip is one drive through every mode: idle, blips, the rev limiter, a lift, a pull through the gears, overrun, cruise and shut-off. Pops and bangs start off; flip the switch to hear them.</p>
       </div>
     </div>
 
@@ -979,7 +988,14 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
         <span class="syn-ptime mono"><span class="syn-pmode" id="syn-pmode"></span><span id="syn-ptime">0.0 s</span></span>
       </div>
       <div class="syn-strip" id="syn-strip" role="slider" tabindex="0" aria-label="Position in the drive" aria-valuemin="0" aria-valuemax="25.5" aria-valuenow="0"></div>
-      <p class="syn-note">Tap a mode to jump to it. Pops come only when you lift after a hard pull.</p>
+      <div class="syn-foot">
+        <label class="syn-switch" for="syn-pops">
+          <input type="checkbox" id="syn-pops" role="switch">
+          <span class="syn-track" aria-hidden="true"></span>
+          <span class="syn-switch-label">Pops &amp; bangs</span>
+        </label>
+        <p class="syn-note" id="syn-note">Off: just the engine. Tap a mode to jump to it.</p>
+      </div>
     </div>
 
     <div class="profiles syn-grid fade" id="syn-grid"></div>
@@ -2266,7 +2282,12 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 /* ── Resoniq Engine Synth player ── */
 (function(){
   const CARS = [{"n": "BMW M3 (E92)", "e": "S65 4.0L V8 NA", "r": "Germany", "f": "V8", "red": 8400, "idle": 800, "t": "A V8 that revs like a race engine", "fp": [-36, -36, -7, -28, -10, -34, -25, 0, -25, -36, -2, -28, -15, -28, -22, -4], "src": "sounds/synth/bmw-m3-e92.mp3", "boost": false}, {"n": "BMW M5 (E60)", "e": "S85 5.0L V10 NA", "r": "Germany", "f": "V10", "red": 8250, "idle": 800, "t": "The Formula 1 era, in a saloon", "fp": [-36, -36, -34, -28, -2, -22, -28, -32, -27, 0, -33, -32, -28, -22, -2, -20], "src": "sounds/synth/bmw-m5-e60.mp3", "boost": false}, {"n": "BMW M4 (G82)", "e": "S58 3.0L I6 Twin-Turbo", "r": "Germany", "f": "I6", "red": 7200, "idle": 750, "t": "Straight-six, two turbos, lots of crackle", "fp": [-36, -36, -36, -36, -33, 0, -36, -36, -27, -36, -36, -14, -36, -36, -18, -36], "src": "sounds/synth/bmw-m4-g82.mp3", "boost": true}, {"n": "Audi RS3", "e": "2.5L TFSI I5 Turbo", "r": "Germany", "f": "I5", "red": 7000, "idle": 800, "t": "The five-cylinder warble", "fp": [-36, -36, -35, -29, 0, -36, -36, -36, -36, -13, -36, -35, -36, -36, -19, -36], "src": "sounds/synth/audi-rs3.mp3", "boost": true}, {"n": "Porsche 911 GT3 (992)", "e": "4.0L Flat-6 NA", "r": "Germany", "f": "Flat-6", "red": 9000, "idle": 850, "t": "Flat-six to 9,000 rpm", "fp": [-36, -36, -35, -36, -36, 0, -36, -36, -24, -36, -36, -11, -36, -36, -10, -36], "src": "sounds/synth/porsche-911-gt3-992.mp3", "boost": false}, {"n": "Alfa Romeo Giulia Quadrifoglio", "e": "2.9L V6 Biturbo", "r": "Italy", "f": "V6", "red": 7000, "idle": 800, "t": "A Ferrari-derived V6 in a saloon", "fp": [-36, -36, -32, -33, -36, 0, -36, -32, -22, -36, -36, -13, -36, -30, -11, -32], "src": "sounds/synth/alfa-romeo-giulia-quadrifoglio.mp3", "boost": true}, {"n": "Chevrolet Corvette Z06 (C6)", "e": "LS7 7.0L V8 NA", "r": "USA", "f": "V8", "red": 7100, "idle": 700, "t": "Seven litres of pushrod V8", "fp": [-36, -32, -2, -21, -4, -24, -21, 0, -16, -24, -2, -35, -13, -28, -23, -8], "src": "sounds/synth/chevrolet-corvette-z06-c6.mp3", "boost": false}, {"n": "Dodge Challenger Hellcat", "e": "6.2L Supercharged Hemi V8", "r": "USA", "f": "V8", "red": 6200, "idle": 750, "t": "Supercharger whine over Hemi thunder", "fp": [-36, -34, -1, -16, -3, -34, -18, 0, -14, -28, -2, -28, -13, -24, -25, -8], "src": "sounds/synth/dodge-challenger-hellcat.mp3", "boost": false}, {"n": "Toyota Supra (MK4)", "e": "2JZ-GTE 3.0L I6 Twin-Turbo", "r": "Japan", "f": "I6", "red": 7000, "idle": 800, "t": "The 2JZ", "fp": [-36, -36, -34, -36, -36, 0, -35, -36, -24, -36, -36, -13, -36, -34, -12, -36], "src": "sounds/synth/toyota-supra-mk4.mp3", "boost": true}];
-  const PHASES = [[0,4.0,"Idle"],[4.0,7.0,"Blips"],[7.0,8.9,"Limiter"],[8.9,11.0,"Lift + pops"],[11.0,17.5,"Pull through gears"],[17.5,19.5,"Overrun"],[19.5,21.5,"Cruise"],[21.5,24.0,"Coast"],[24.0,25.5,"Off"]];
+  const PHASES = [[0,4.0,"Idle"],[4.0,7.0,"Blips"],[7.0,8.9,"Limiter"],[8.9,11.0,"Lift"],[11.0,17.5,"Pull through gears"],[17.5,19.5,"Overrun"],[19.5,21.5,"Cruise"],[21.5,24.0,"Coast"],[24.0,25.5,"Off"]];
+  // Two renders of the same drive per car: engine only (default) and with pops & bangs.
+  const popsBox = document.getElementById('syn-pops');
+  let popsOn = false;
+  popsBox.checked = false;
+  const srcFor = c => popsOn ? c.src.replace(/\.mp3$/, '-pops.mp3') : c.src;
   const TOTAL = 25.5;
   const grid = document.getElementById('syn-grid'); if(!grid) return;
   const strip = document.getElementById('syn-strip');
@@ -2322,7 +2343,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   function choose(i){
     if (i === cur) { audio.paused ? audio.play().catch(()=>{}) : audio.pause(); return; }
     cur = i; const c = CARS[i];
-    audio.src = c.src; audio.play().catch(()=>{});
+    audio.src = srcFor(c); audio.play().catch(()=>{});
     document.getElementById('syn-pbtn').disabled = false;
     document.getElementById('syn-pkick').textContent = c.r + ' · ' + c.e;
     document.getElementById('syn-pname').textContent = c.n;
@@ -2341,7 +2362,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
     segs.forEach((s, k) => {
       const on = cur >= 0 && t >= PHASES[k][0] && t < PHASES[k][1];
       s.classList.toggle('on', on);
-      if (on) mode = PHASES[k][2];
+      if (on) mode = s.querySelector('span').textContent;
     });
     document.getElementById('syn-pmode').textContent = mode;
   }
@@ -2350,6 +2371,23 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   strip.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { seek((audio.currentTime || 0) + 1); e.preventDefault(); }
     if (e.key === 'ArrowLeft')  { seek(Math.max(0, (audio.currentTime || 0) - 1)); e.preventDefault(); }
+  });
+  // Flip pops on/off: swap to the other render at the same moment in the drive.
+  popsBox.addEventListener('change', () => {
+    popsOn = popsBox.checked;
+    segs[3].querySelector('span').textContent = popsOn ? 'Lift + pops' : 'Lift';
+    segs[3].title = popsOn ? 'Lift + pops' : 'Lift';
+    document.getElementById('syn-note').textContent = popsOn
+      ? 'On: pops when you lift after a hard pull, plus bangs on the limiter.'
+      : 'Off: just the engine. Tap a mode to jump to it.';
+    if (cur < 0) return;
+    const t = audio.currentTime || 0, wasPlaying = !audio.paused;
+    audio.src = srcFor(CARS[cur]);
+    audio.addEventListener('loadedmetadata', () => {
+      audio.currentTime = t;
+      if (wasPlaying) audio.play().catch(()=>{});
+    }, {once:true});
+    audio.load();
   });
   ['play','pause','ended'].forEach(ev => audio.addEventListener(ev, refresh));
   audio.addEventListener('timeupdate', tick);
