@@ -34,6 +34,9 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+/* Never scroll sideways: the slide-out menu and the ticker live past the edges.
+   On body (not html) so it applies to the viewport and sticky elements keep working. */
+body{overflow-x:hidden;overscroll-behavior-x:none}
 img{max-width:100%;display:block}
 a{color:inherit}
 button,input{font:inherit;color:inherit}
@@ -776,7 +779,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div class="sec-index"><b>02</b><span class="mono">How it works</span></div>
       <div>
         <h2>OBD2 in.<br>Engine sound out.</h2>
-        <p class="lead">Resoniq reads your throttle position and speed in real time via your car's OBD2 port, then generates the perfect engine sound layer to match.</p>
+        <p class="lead">Resoniq reads your throttle position and speed in real time through your car's OBD2 port, then generates the engine sound to match, live.</p>
       </div>
     </div>
 
@@ -784,16 +787,16 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div class="c-node hi"><span class="c-ico"><svg class="i"><use href="#i-car"/></svg></span><span class="mono">Step 1</span><div class="c-node-name">Your EV</div><div class="c-node-sub">OBD2 port</div></div>
       <div class="c-node"><span class="c-ico"><svg class="i"><use href="#i-bt"/></svg></span><span class="mono">Step 2</span><div class="c-node-name">BLE Dongle</div><div class="c-node-sub">plug-in, wireless</div></div>
       <div class="c-node hi"><span class="c-ico"><svg class="i"><use href="#i-cpu"/></svg></span><span class="mono">Step 3</span><div class="c-node-name">Resoniq Unit</div><div class="c-node-sub">sound processor</div></div>
-      <div class="c-node"><span class="c-ico"><svg class="i"><use href="#i-db"/></svg></span><span class="mono">Step 4</span><div class="c-node-name">Sound Packs</div><div class="c-node-sub">on-board + OTA</div></div>
-      <div class="c-node"><span class="c-ico"><svg class="i"><use href="#i-sliders"/></svg></span><span class="mono">Step 5</span><div class="c-node-name">Audio Engine</div><div class="c-node-sub">studio quality</div></div>
+      <div class="c-node"><span class="c-ico"><svg class="i"><use href="#i-db"/></svg></span><span class="mono">Step 4</span><div class="c-node-name">Engine Synth</div><div class="c-node-sub">built in</div></div>
+      <div class="c-node"><span class="c-ico"><svg class="i"><use href="#i-sliders"/></svg></span><span class="mono">Step 5</span><div class="c-node-name">Audio Engine</div><div class="c-node-sub">generated live</div></div>
       <div class="c-node hi"><span class="c-ico"><svg class="i"><use href="#i-speaker"/></svg></span><span class="mono">Step 6</span><div class="c-node-name">Your Speakers</div><div class="c-node-sub">cabin + exterior</div></div>
     </div>
-    <p class="chain-note">Control it from your phone: connect to the <code>etron-sound</code> WiFi and open the app.</p>
+    <p class="chain-note">Control it from your phone: open the Resoniq app and connect to your unit.</p>
 
     <div class="g3 stagger">
       <div class="card"><div class="card-icon"><svg class="i"><use href="#i-zap"/></svg></div><h3>Plug in. Done.</h3><p>The OBD2 Bluetooth dongle takes 10 seconds to install. No wiring, no cutting, no coding. The Resoniq unit mounts in your trunk.</p></div>
       <div class="card"><div class="card-icon"><svg class="i"><use href="#i-gauge"/></svg></div><h3>Throttle-accurate</h3><p>Throttle position updates every 75ms. The virtual RPM engine blends pedal pressure and vehicle speed to create a natural, responsive rev feel.</p></div>
-      <div class="card"><div class="card-icon"><svg class="i"><use href="#i-phone"/></svg></div><h3>Full app control</h3><p>PWA web app, no install required. Switch sound profiles, adjust volumes, tweak EQ, and upload new packs over the air from your iPhone.</p></div>
+      <div class="card"><div class="card-icon"><svg class="i"><use href="#i-phone"/></svg></div><h3>Full app control</h3><p>The Resoniq iPhone app. Switch engines, adjust volumes and EQ, and turn pops &amp; bangs on or off, all from your phone.</p></div>
     </div>
   </div>
 </section>
@@ -892,17 +895,16 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div>
         <div class="slist fade">
           <div class="si"><span class="sdot sd-live"></span><span class="sname">OBD2 Throttle + Speed Sync</span><span class="sval">75ms cycle</span></div>
-          <div class="si"><span class="sdot sd-live"></span><span class="sname">Virtual RPM Engine</span><span class="sval">throttle 65% + speed 35%</span></div>
+          <div class="si"><span class="sdot sd-live"></span><span class="sname">Virtual Gearbox</span><span class="sval">speed-based RPM, real shifts</span></div>
           <div class="si"><span class="sdot sd-live"></span><span class="sname">Rev Hang on Lift-Off</span><span class="sval">0.40s natural decay</span></div>
           <div class="si"><span class="sdot sd-live"></span><span class="sname">Startup Sound</span><span class="sval">plays on ignition</span></div>
-          <div class="si"><span class="sdot sd-live"></span><span class="sname">PWA Web App</span><span class="sval">iPhone dock, full-screen</span></div>
-          <div class="si"><span class="sdot sd-live"></span><span class="sname">Sound Profile Switching</span><span class="sval">live, no reboot</span></div>
+          <div class="si"><span class="sdot sd-live"></span><span class="sname">iPhone App</span><span class="sval">Bluetooth control</span></div>
+          <div class="si"><span class="sdot sd-live"></span><span class="sname">Engine Switching</span><span class="sval">live, no reboot</span></div>
           <div class="si"><span class="sdot sd-live"></span><span class="sname">EQ (Bass + Treble)</span><span class="sval">±6 dB per band</span></div>
-          <div class="si"><span class="sdot sd-live"></span><span class="sname">OTA Sound Pack Upload</span><span class="sval">WAV via browser</span></div>
-          <div class="si"><span class="sdot sd-coming"></span><span class="sname">More Sound Packs</span><span class="sval">V8, V10, Flat-6, F1 — in production</span></div>
+          <div class="si"><span class="sdot sd-coming"></span><span class="sname">Resoniq Engine Synth</span><span class="sval">9 engines, in testing</span></div>
           <div class="si"><span class="sdot sd-coming"></span><span class="sname">Fuse Tap (Permanent Power)</span><span class="sval">ACC fuse, installing soon</span></div>
           <div class="si"><span class="sdot sd-future"></span><span class="sname">Exterior / Rear Speaker</span><span class="sval">Phase 3 hardware</span></div>
-          <div class="si"><span class="sdot sd-future"></span><span class="sname">Native iOS App</span><span class="sval">TestFlight coming</span></div>
+          <div class="si"><span class="sdot sd-future"></span><span class="sname">App Store Release</span><span class="sval">TestFlight first</span></div>
         </div>
         <div class="legend"><span><i class="sdot sd-live"></i>Live</span><span><i class="sdot sd-coming"></i>Coming soon</span><span><i class="sdot sd-future"></i>Later</span></div>
       </div>
@@ -926,7 +928,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
           <div class="p-status">
             <span style="font-size:10px;color:#777;letter-spacing:.12em;font-weight:600">STATUS</span>
             <span class="ok">OBD linked · Unit linked</span>
-            <span class="pk">Test Pack v1<small>Profile 1 — Active</small></span>
+            <span class="pk">BMW M3 (E92)<small>Engine Synth — Active</small></span>
           </div>
         </div>
       </div>
@@ -1074,23 +1076,22 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
     <div class="rm">
       <div class="rm-row done fade">
         <div class="rm-num">01</div>
-        <div class="rm-body"><span class="rm-label mono">Phase 1 · Complete</span><h3>Working Prototype</h3><p>Core system built and installed in a real Audi e-tron. Throttle-synced audio, web app control, PWA install, 5 profile slots.</p></div>
+        <div class="rm-body"><span class="rm-label mono">Phase 1 · Complete</span><h3>Working Prototype</h3><p>Core system built and installed in a real Audi e-tron. Throttle-synced audio, phone control, switchable sound profiles.</p></div>
         <div class="rm-pills">
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>Custom sound hardware</span>
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>BLE OBD2 link</span>
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>Virtual RPM engine</span>
-          <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>PWA app (iPhone dock)</span>
+          <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>Phone app control</span>
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>Rev hang + crackle</span>
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>75ms throttle sync</span>
-          <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>OTA pack upload</span>
           <span class="rm-pill done"><svg class="i i-sm"><use href="#i-check"/></svg>EQ + volume controls</span>
         </div>
       </div>
       <div class="rm-row now fade">
         <div class="rm-num">02</div>
-        <div class="rm-body"><span class="rm-label mono">Phase 2 · In progress (weeks)</span><h3>Polish + Sound Library</h3><p>Clean up the physical install, produce the first four full sound packs, and wire permanent fuse-tap power.</p></div>
+        <div class="rm-body"><span class="rm-label mono">Phase 2 · In progress (weeks)</span><h3>Polish + Engine Synth</h3><p>Clean up the physical install, tune the first Engine Synth engines in the car, and wire permanent fuse-tap power.</p></div>
         <div class="rm-pills">
-          <span class="rm-pill">ACC fuse tap power</span><span class="rm-pill">Better speaker (5.25")</span><span class="rm-pill">V8 sound pack</span><span class="rm-pill">V10 pack</span><span class="rm-pill">Flat-6 pack</span><span class="rm-pill">F1 pack</span><span class="rm-pill">Electronics inside enclosure</span><span class="rm-pill">Cable management</span>
+          <span class="rm-pill">ACC fuse tap power</span><span class="rm-pill">Better speaker (5.25")</span><span class="rm-pill">Engine Synth tuning</span><span class="rm-pill">More engines</span><span class="rm-pill">Electronics inside enclosure</span><span class="rm-pill">Cable management</span>
         </div>
       </div>
       <div class="rm-row fade">
@@ -1166,7 +1167,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div class="sec-index"><b>09</b><span class="mono">Help &amp; FAQ</span></div>
       <div>
         <h2>Common questions</h2>
-        <p class="lead">Everything you need to know before joining the waitlist or trying the simulator.</p>
+        <p class="lead">Everything you need to know before joining the waitlist.</p>
       </div>
     </div>
 
@@ -1190,19 +1191,18 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 
       <div class="faq-list">
         <details class="faq-item"><summary>What vehicles does Resoniq work with?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">Any electric vehicle with an OBD2 port, which covers virtually every EV made after 2008. The current prototype runs on a real Audi e-tron and has been daily-driven and tested. Other EVs may require a short setup to map the correct OBD2 PIDs for throttle position and speed, but no hardware changes are needed.</div></details>
+          <div class="faq-body">Any electric vehicle with an OBD2 port, which covers virtually every EV made after 2008. Resoniq uses the standard OBD2 throttle and speed readings and learns each car's pedal range and acceleration on its own, so it's designed to work without any per-car setup. The prototype is daily-driven and tested on an Audi e-tron; more cars will be tested before launch.</div></details>
         <details class="faq-item"><summary>Will this void my car's warranty?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">No. Resoniq connects to your OBD2 port in <strong>read-only mode</strong>. It only reads throttle and speed data and never sends any commands to your vehicle. It's legally and technically identical to plugging in a scan tool or a diagnostic app. Nothing in your car's software or hardware is modified in any way.</div></details>
+          <div class="faq-body">It's designed not to. Resoniq connects to your OBD2 port in <strong>read-only mode</strong>: it only reads throttle and speed data, the same way a scan tool or diagnostic app does, and never changes any settings. Nothing in your car's software or hardware is modified, and it unplugs in seconds.</div></details>
         <details class="faq-item"><summary>How does the startup sound work?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">When you switch on your car, the Resoniq unit detects power and automatically plays the startup sound for your selected profile: an engine crank that ramps up into the running idle loop. It's seamless and triggers without any button press.</div></details>
+          <div class="faq-body">When you switch on your car, Resoniq detects it and starts your selected engine on its own, settling straight into idle. There's no button to press.</div></details>
         <details class="faq-item"><summary>How loud does it get? Can I control the volume?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
           <div class="faq-body">Completely adjustable from the app. The speaker lives in the trunk and fills the cabin through the rear shelf. Most people run it between 40–70%, present enough to feel but not overwhelming. You can also tweak bass and treble independently, and mute it in one tap if you want silence.</div></details>
         <details class="faq-item"><summary>What engine sounds are available right now?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
           <div class="faq-body">Nine engines from the <a href="#sound">Resoniq Engine Synth</a>: BMW M3 (E92), M5 (E60) and M4 (G82), Audi RS3, Porsche 911 GT3 (992), Alfa Romeo Giulia Quadrifoglio, Chevrolet Corvette Z06 (C6), Dodge Challenger Hellcat and Toyota Supra (MK4). Each is generated live from the engine's firing order and exhaust, so it follows your revs exactly. They're development sounds still being tuned, and more are coming soon. You can also <a href="#sound">suggest an engine</a>, and the most-requested ones get built first.</div></details>
-        <details class="faq-item"><summary>Can I upload my own custom sound packs?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">Yes, this is already live in the prototype. The web app includes an OTA (over-the-air) upload screen where you can push your own WAV files directly to the unit over WiFi. Record an idle, low, mid, high, and redline clip, upload them, and you're running a custom pack. Full format specs will ship with the production unit.</div></details>
+        
         <details class="faq-item"><summary>How do I install the hardware?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
-          <div class="faq-body">Under 10 minutes, no tools required. Plug the Bluetooth OBD2 dongle into your OBD2 port (under the steering column), mount the Resoniq unit in your trunk, connect your phone to the <code>etron-sound</code> WiFi network, and open the app. That's it. The production kit will include a fuse-tap cable for cleaner permanent power, so no dongles or cables hanging.</div></details>
+          <div class="faq-body">Under 10 minutes, no tools required. Plug the Bluetooth OBD2 dongle into your OBD2 port (under the steering column), mount the Resoniq unit in your trunk, then open the Resoniq app and connect to your unit. That's it. The production kit will include a fuse-tap cable for clean, permanent power, so there are no loose cables.</div></details>
         <details class="faq-item"><summary>When can I actually buy one?<svg class="faq-chevron i"><use href="#i-chev"/></svg></summary>
           <div class="faq-body">We're in active prototype phase, and the system runs on a real Audi e-tron every day. Production kits are targeted for Phase 4 of the roadmap, the commercial kit. <a href="#waitlist">Join the waitlist</a> to lock in 15% off the $379.99 launch price and get first access when units are ready.</div></details>
       </div>
