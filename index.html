@@ -625,8 +625,8 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   <div class="nav-row">
     <a class="nav-logo" href="#">Res<em>on</em>iq</a>
     <div class="nav-links">
+      <a href="#sound">Engines</a>
       <a href="#how">How It Works</a>
-      <a href="#sound">Sound</a>
       <a href="#vehicles">Vehicles</a>
       <a href="#progress">Build Log</a>
       <a href="#roadmap">Roadmap</a>
@@ -649,8 +649,8 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
     <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
   <div class="nav-drawer-links">
+    <a href="#sound">Hear the engines</a>
     <a href="#how">How It Works</a>
-    <a href="#sound">Sound</a>
     <a href="#vehicles">Vehicles</a>
     <a href="#progress">Build Log</a>
     <a href="#roadmap">Roadmap</a>
@@ -674,7 +674,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
         <p class="hero-tagline">Real engine sounds, synced to your throttle, your speed, your car.</p>
         <div class="hero-actions">
           <a href="#waitlist" class="btn btn-primary">Join the waitlist <svg class="i i-sm"><use href="#i-arrow"/></svg></a>
-          <a href="#how" class="btn btn-ghost">See how it works</a>
+          <a href="#sound" class="btn btn-ghost"><svg class="i i-sm"><use href="#i-play"/></svg>Hear the engines</a>
         </div>
       </div>
 
@@ -717,11 +717,63 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 </header>
 
 <main>
-<!-- ═══════════ 01 HOW IT WORKS ═══════════ -->
+<!-- ═══════════ 01 ENGINE SYNTH ═══════════ -->
+<section class="section" id="sound">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><b>01</b><span class="mono">Hear the engines</span></div>
+      <div>
+        <h2>Resoniq Engine Synth</h2>
+        <p class="lead">Every engine here is generated live from its <strong>real firing order, exhaust layout and induction</strong>, using the same code that runs on the box. Each clip is one drive through every mode: idle, blips, the rev limiter, a lift, a pull through the gears, overrun, cruise, a hard stop with rev-matched downshifts, and shut-off. Pops and bangs start off; flip the switch to hear them.</p>
+      </div>
+    </div>
+
+    <div class="callout"><svg class="i"><use href="#i-info"/></svg><div><b>Development sounds. More engines are coming soon.</b><p>These are synthesized models of each engine, still being tuned, not recordings. Car names describe the engine each sound is modeled on; Resoniq isn't affiliated with these manufacturers.</p></div></div>
+
+    <div class="syn-player" id="syn-player">
+      <div class="syn-prow">
+        <button class="syn-pbtn" id="syn-pbtn" type="button" aria-label="Play" disabled><svg class="i" viewBox="0 0 24 24"><use href="#i-play" id="syn-picon"/></svg></button>
+        <div class="syn-pinfo">
+          <span class="mono" id="syn-pkick">Pick an engine below</span>
+          <span class="syn-pname" id="syn-pname">Nothing playing</span>
+        </div>
+        <span class="syn-ptime mono"><span class="syn-pmode" id="syn-pmode"></span><span id="syn-ptime">0.0 s</span></span>
+      </div>
+      <div class="syn-strip" id="syn-strip" role="slider" tabindex="0" aria-label="Position in the drive" aria-valuemin="0" aria-valuemax="25.5" aria-valuenow="0"></div>
+      <div class="syn-foot">
+        <label class="syn-switch" for="syn-pops">
+          <input type="checkbox" id="syn-pops" role="switch">
+          <span class="syn-track" aria-hidden="true"></span>
+          <span class="syn-switch-label">Pops &amp; bangs</span>
+        </label>
+        <p class="syn-note" id="syn-note">Off: just the engine. Tap a mode to jump to it.</p>
+      </div>
+    </div>
+
+    <div class="profiles syn-grid fade" id="syn-grid"></div>
+    <div class="syn-legend"><span><i style="background:var(--tx-2)"></i>Engine orders: the even firing pulses</span><span><i style="background:var(--accent)"></i>Half orders: uneven pulses (burble, warble, rumble)</span></div>
+
+    <div class="suggest">
+      <div>
+        <h3><svg class="i" style="color:var(--accent)"><use href="#i-wave"/></svg>New engines are coming soon</h3>
+        <p>Tell us what you want to hear next. Every suggestion gets read, and the most-requested engines get built first.</p>
+      </div>
+      <div>
+        <form id="suggest-form" class="field-row" onsubmit="submitSuggestion(event)">
+          <input id="suggest-input" class="field" type="text" placeholder="Ferrari 458, Lexus LFA, Nissan GT-R…" maxlength="120" required aria-label="Engine you'd like to hear">
+          <button type="submit" id="suggest-btn" class="btn btn-primary">Send it</button>
+        </form>
+        <div id="suggest-success" class="ok-msg"><svg class="i"><use href="#i-check"/></svg>Got it. The most-asked-for engines get built first.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 02 HOW IT WORKS ═══════════ -->
 <section class="section" id="how">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-index"><b>01</b><span class="mono">How it works</span></div>
+      <div class="sec-index"><b>02</b><span class="mono">How it works</span></div>
       <div>
         <h2>OBD2 in.<br>Engine sound out.</h2>
         <p class="lead">Resoniq reads your throttle position and speed in real time via your car's OBD2 port, then generates the perfect engine sound layer to match.</p>
@@ -746,11 +798,11 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   </div>
 </section>
 
-<!-- ═══════════ 02 SPEAKERS ═══════════ -->
+<!-- ═══════════ 03 SPEAKERS ═══════════ -->
 <section class="section" id="speakers">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-index"><b>02</b><span class="mono">Speaker system</span></div>
+      <div class="sec-index"><b>03</b><span class="mono">Speaker system</span></div>
       <div>
         <h2>Layered audio.<br>Real presence.</h2>
         <p class="lead">Phase 3 expands from a single interior speaker to a full directional sound stage, inside and out.</p>
@@ -825,11 +877,11 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   </div>
 </section>
 
-<!-- ═══════════ 03 CURRENT BUILD ═══════════ -->
+<!-- ═══════════ 04 CURRENT BUILD ═══════════ -->
 <section class="section" id="build">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-index"><b>03</b><span class="mono">Current prototype</span></div>
+      <div class="sec-index"><b>04</b><span class="mono">Current prototype</span></div>
       <div>
         <h2>What's working today</h2>
         <p class="lead">Running on a real Audi e-tron, driven daily. Every feature below is live and tested on the road.</p>
@@ -882,11 +934,11 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
   </div>
 </section>
 
-<!-- ═══════════ 04 BUILD LOG ═══════════ -->
+<!-- ═══════════ 05 BUILD LOG ═══════════ -->
 <section class="section" id="progress">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-index"><b>04</b><span class="mono">Build log · updated Oct 2026</span></div>
+      <div class="sec-index"><b>05</b><span class="mono">Build log · updated Oct 2026</span></div>
       <div>
         <h2>From breadboard to custom hardware</h2>
         <p class="lead">Resoniq started as a hand-wired prototype in one car. This year it became a custom board designed for small-batch production. Here's how that's going.</p>
@@ -960,58 +1012,6 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
         <p>Install photos, sound tests and the e-tron itself live on Instagram.</p>
         <span class="handle">@resoniq.ev</span>
         <a class="btn btn-ghost btn-sm" style="align-self:flex-start" href="https://instagram.com/resoniq.ev" target="_blank" rel="noopener">Follow on Instagram <svg class="i i-sm"><use href="#i-ext"/></svg></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ 05 SOUND LIBRARY ═══════════ -->
-<section class="section" id="sound">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-index"><b>05</b><span class="mono">Sound development</span></div>
-      <div>
-        <h2>Resoniq Engine Synth</h2>
-        <p class="lead">Every engine here is generated live from its <strong>real firing order, exhaust layout and induction</strong>, using the same code that runs on the box. Each clip is one drive through every mode: idle, blips, the rev limiter, a lift, a pull through the gears, overrun, cruise and shut-off. Pops and bangs start off; flip the switch to hear them.</p>
-      </div>
-    </div>
-
-    <div class="callout"><svg class="i"><use href="#i-info"/></svg><div><b>Development sounds. More engines are coming soon.</b><p>These are synthesized models of each engine, still being tuned, not recordings. Car names describe the engine each sound is modeled on; Resoniq isn't affiliated with these manufacturers.</p></div></div>
-
-    <div class="syn-player" id="syn-player">
-      <div class="syn-prow">
-        <button class="syn-pbtn" id="syn-pbtn" type="button" aria-label="Play" disabled><svg class="i" viewBox="0 0 24 24"><use href="#i-play" id="syn-picon"/></svg></button>
-        <div class="syn-pinfo">
-          <span class="mono" id="syn-pkick">Pick an engine below</span>
-          <span class="syn-pname" id="syn-pname">Nothing playing</span>
-        </div>
-        <span class="syn-ptime mono"><span class="syn-pmode" id="syn-pmode"></span><span id="syn-ptime">0.0 s</span></span>
-      </div>
-      <div class="syn-strip" id="syn-strip" role="slider" tabindex="0" aria-label="Position in the drive" aria-valuemin="0" aria-valuemax="25.5" aria-valuenow="0"></div>
-      <div class="syn-foot">
-        <label class="syn-switch" for="syn-pops">
-          <input type="checkbox" id="syn-pops" role="switch">
-          <span class="syn-track" aria-hidden="true"></span>
-          <span class="syn-switch-label">Pops &amp; bangs</span>
-        </label>
-        <p class="syn-note" id="syn-note">Off: just the engine. Tap a mode to jump to it.</p>
-      </div>
-    </div>
-
-    <div class="profiles syn-grid fade" id="syn-grid"></div>
-    <div class="syn-legend"><span><i style="background:var(--tx-2)"></i>Engine orders: the even firing pulses</span><span><i style="background:var(--accent)"></i>Half orders: uneven pulses (burble, warble, rumble)</span></div>
-
-    <div class="suggest">
-      <div>
-        <h3><svg class="i" style="color:var(--accent)"><use href="#i-wave"/></svg>New engines are coming soon</h3>
-        <p>Tell us what you want to hear next. Every suggestion gets read, and the most-requested engines get built first.</p>
-      </div>
-      <div>
-        <form id="suggest-form" class="field-row" onsubmit="submitSuggestion(event)">
-          <input id="suggest-input" class="field" type="text" placeholder="Ferrari 458, Lexus LFA, Nissan GT-R…" maxlength="120" required aria-label="Engine you'd like to hear">
-          <button type="submit" id="suggest-btn" class="btn btn-primary">Send it</button>
-        </form>
-        <div id="suggest-success" class="ok-msg"><svg class="i"><use href="#i-check"/></svg>Got it. The most-asked-for engines get built first.</div>
       </div>
     </div>
   </div>
@@ -1247,7 +1247,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
       <div>
         <div class="foot-col-title mono">Product</div>
         <div class="foot-col-links">
-          <a href="#how">How It Works</a><a href="#speakers">Speaker System</a><a href="#sound">Sound Packs</a><a href="#vehicles">Vehicles</a><a href="#build">Current Build</a><a href="#progress">Build Log</a><a href="#roadmap">Roadmap</a><a href="#pricing">Pricing</a>
+          <a href="#sound">Engine Sounds</a><a href="#how">How It Works</a><a href="#speakers">Speaker System</a><a href="#vehicles">Vehicles</a><a href="#build">Current Build</a><a href="#progress">Build Log</a><a href="#roadmap">Roadmap</a><a href="#pricing">Pricing</a>
         </div>
       </div>
       <div>
@@ -2282,7 +2282,7 @@ footer{border-top:1px solid var(--line);margin-top:128px;padding:64px 0 40px}
 /* ── Resoniq Engine Synth player ── */
 (function(){
   const CARS = [{"n": "BMW M3 (E92)", "e": "S65 4.0L V8 NA", "r": "Germany", "f": "V8", "red": 8400, "idle": 800, "t": "A V8 that revs like a race engine", "fp": [-36, -36, -7, -28, -10, -34, -25, 0, -25, -36, -2, -28, -15, -28, -22, -4], "src": "sounds/synth/bmw-m3-e92.mp3", "boost": false}, {"n": "BMW M5 (E60)", "e": "S85 5.0L V10 NA", "r": "Germany", "f": "V10", "red": 8250, "idle": 800, "t": "The Formula 1 era, in a saloon", "fp": [-36, -36, -34, -28, -2, -22, -28, -32, -27, 0, -33, -32, -28, -22, -2, -20], "src": "sounds/synth/bmw-m5-e60.mp3", "boost": false}, {"n": "BMW M4 (G82)", "e": "S58 3.0L I6 Twin-Turbo", "r": "Germany", "f": "I6", "red": 7200, "idle": 750, "t": "Straight-six, two turbos, lots of crackle", "fp": [-36, -36, -36, -36, -33, 0, -36, -36, -27, -36, -36, -14, -36, -36, -18, -36], "src": "sounds/synth/bmw-m4-g82.mp3", "boost": true}, {"n": "Audi RS3", "e": "2.5L TFSI I5 Turbo", "r": "Germany", "f": "I5", "red": 7000, "idle": 800, "t": "The five-cylinder warble", "fp": [-36, -36, -35, -29, 0, -36, -36, -36, -36, -13, -36, -35, -36, -36, -19, -36], "src": "sounds/synth/audi-rs3.mp3", "boost": true}, {"n": "Porsche 911 GT3 (992)", "e": "4.0L Flat-6 NA", "r": "Germany", "f": "Flat-6", "red": 9000, "idle": 850, "t": "Flat-six to 9,000 rpm", "fp": [-36, -36, -35, -36, -36, 0, -36, -36, -24, -36, -36, -11, -36, -36, -10, -36], "src": "sounds/synth/porsche-911-gt3-992.mp3", "boost": false}, {"n": "Alfa Romeo Giulia Quadrifoglio", "e": "2.9L V6 Biturbo", "r": "Italy", "f": "V6", "red": 7000, "idle": 800, "t": "A Ferrari-derived V6 in a saloon", "fp": [-36, -36, -32, -33, -36, 0, -36, -32, -22, -36, -36, -13, -36, -30, -11, -32], "src": "sounds/synth/alfa-romeo-giulia-quadrifoglio.mp3", "boost": true}, {"n": "Chevrolet Corvette Z06 (C6)", "e": "LS7 7.0L V8 NA", "r": "USA", "f": "V8", "red": 7100, "idle": 700, "t": "Seven litres of pushrod V8", "fp": [-36, -32, -2, -21, -4, -24, -21, 0, -16, -24, -2, -35, -13, -28, -23, -8], "src": "sounds/synth/chevrolet-corvette-z06-c6.mp3", "boost": false}, {"n": "Dodge Challenger Hellcat", "e": "6.2L Supercharged Hemi V8", "r": "USA", "f": "V8", "red": 6200, "idle": 750, "t": "Supercharger whine over Hemi thunder", "fp": [-36, -34, -1, -16, -3, -34, -18, 0, -14, -28, -2, -28, -13, -24, -25, -8], "src": "sounds/synth/dodge-challenger-hellcat.mp3", "boost": false}, {"n": "Toyota Supra (MK4)", "e": "2JZ-GTE 3.0L I6 Twin-Turbo", "r": "Japan", "f": "I6", "red": 7000, "idle": 800, "t": "The 2JZ", "fp": [-36, -36, -34, -36, -36, 0, -35, -36, -24, -36, -36, -13, -36, -34, -12, -36], "src": "sounds/synth/toyota-supra-mk4.mp3", "boost": true}];
-  const PHASES = [[0,4.0,"Idle"],[4.0,7.0,"Blips"],[7.0,8.9,"Limiter"],[8.9,11.0,"Lift"],[11.0,17.5,"Pull through gears"],[17.5,19.5,"Overrun"],[19.5,21.5,"Cruise"],[21.5,24.0,"Coast"],[24.0,25.5,"Off"]];
+  const PHASES = [[0,4.0,"Idle"],[4.0,7.0,"Blips"],[7.0,8.9,"Limiter"],[8.9,11.0,"Lift"],[11.0,17.5,"Pull through gears"],[17.5,19.5,"Overrun"],[19.5,21.5,"Cruise"],[21.5,24.0,"Braking"],[24.0,25.5,"Off"]];
   // Two renders of the same drive per car: engine only (default) and with pops & bangs.
   const popsBox = document.getElementById('syn-pops');
   let popsOn = false;
